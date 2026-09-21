@@ -91,6 +91,9 @@ body {
 
 header h1 { margin: 0 0 4px; font-size: clamp(1.5rem, 2.6vw, 2.1rem); font-weight: 700; letter-spacing: -0.01em; }
 header p { margin: 0; color: var(--muted); }
+header p.sync { margin-top: 4px; font-size: 0.85rem; min-height: 1.3em; }
+header p.sync.ok { color: var(--done); }
+header p.sync.err { color: var(--before-line); font-weight: 600; }
 
 .stats { display: flex; flex-wrap: wrap; gap: 28px; margin: 22px 0 14px; align-items: flex-end; }
 .stat b { display: block; font-size: 1.9rem; font-weight: 700; line-height: 1.05; }
@@ -172,6 +175,7 @@ header p { margin: 0; color: var(--muted); }
   <header>
     <h1>Timeline video survey junction</h1>
     <p>21 Sep – 3 Nov 2026. Data is synced live with the team!</p>
+    <p class="sync" id="sync" role="status" aria-live="polite"></p>
   </header>
 
   <div class="stats" id="stats">
@@ -189,9 +193,10 @@ header p { margin: 0; color: var(--muted); }
 </div>
 
 <script>
-// --- IMPORTANT: Paste your copied Web App URL inside the quotes below ---
-const WEB_APP_URL = "YOUR_WEB_APP_URL_HERE"; 
-// ------------------------------------------------------------------------
+// Google Apps Script Web App URL (saves progress to your Google Sheet)
+const WEB_APP_URL = "https://script.google.com/a/macros/southmax.com.my/s/AKfycbxuEODr5uvcGS8GKcfi1O4dCE_GNki4SN8ackIxzxRmOqzAMEUsC9-YDyOuI48E4z4/exec";
+// How often (ms) to pull other people's changes while the page is open
+const POLL_MS = 20000;
 
 var AUTH = { MBJB: "Majlis Bandaraya Johor Bahru", MBPG: "Majlis Bandaraya Pasir Gudang", MBIP: "Majlis Bandaraya Iskandar Puteri", MPKu: "Majlis Perbandaran Kulai" };
 var PK = "Phase 1+2 (combined)";
@@ -234,20 +239,49 @@ function keyOf(d){ var m = d.getMonth()+1, dd = d.getDate(); return d.getFullYea
 function mondayOf(d){ var x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); var w = (x.getDay()+6)%7; x.setDate(x.getDate()-w); return keyOf(x); }
 function idOf(dateKey, s, idx){ return dateKey + "-" + s.s + (s.s === "x" ? idx : ""); }
 
-var done = {};
+var done = {};      // slot id -> 1 when finished (shared with the team)
+var pending = {};   // slot id -> true/false for changes still being saved
 var filt = { auth: "all", kind: "all" };
 
-// Sync function to push to Google Sheets via GET request
-function syncToSheet(id, isDone) {
-  if (!WEB_APP_URL || WEB_APP_URL.includes("YOUR_WEB_APP_URL_HERE")) return;
-  fetch(WEB_APP_URL + "?action=set&id=" + encodeURIComponent(id) + "&done=" + isDone, { mode: 'no-cors' });
+function isConfigured(){ return typeof WEB_APP_URL === "string" && WEB_APP_URL.indexOf("https://script.google.com/") === 0; }
+
+function setStatus(text, kind){
+  var el = document.getElementById("sync");
+  el.textContent = text;
+  el.className = "sync" + (kind ? " " + kind : "");
+}
+function timeNow(){ return new Date().toLocaleTimeString("ms-MY", { hour: "2-digit", minute: "2-digit" }); }
+
+// Save one change to the Google Sheet
+function syncToSheet(id, isDone){
+  return fetch(WEB_APP_URL + "?action=set&id=" + encodeURIComponent(id) + "&done=" + isDone)
+    .then(function(r){ return r.json(); })
+    .then(function(j){ if (!j || !j.ok) throw new Error("Unexpected response from Web App"); });
+}
+
+// Load everyone's progress from the Google Sheet
+function loadTeamData(){
+  if (!isConfigured()) { setStatus("Belum disambung ke Google Sheet. Perubahan tidak disimpan.", "err"); return Promise.resolve(); }
+  return fetch(WEB_APP_URL + "?action=get&t=" + Date.now())
+    .then(function(r){ return r.json(); })
+    .then(function(remote){
+      if (!remote || typeof remote !== "object" || Array.isArray(remote)) throw new Error("Unexpected data from Web App");
+      done = remote;
+      Object.keys(pending).forEach(function(id){ if (pending[id]) done[id] = 1; else delete done[id]; });
+      applyDone();
+      setStatus("Disegerakkan dengan pasukan pada " + timeNow(), "ok");
+    })
+    .catch(function(e){
+      console.error("Failed to load team data", e);
+      setStatus("Tidak dapat sambung ke data pasukan. Semak akses Web App atau muat semula halaman.", "err");
+    });
 }
 
 function slotHTML(dateKey, s, idx){
   var id = idOf(dateKey, s, idx);
   var fullCls = s.s === "full" ? " full" : "";
   if (s.t === "free") return '<div class="slot free' + fullCls + '"><div class="slot-top"><span>' + WHEN[s.s] + '</span></div><span class="free-txt">Kosong</span></div>';
-  
+
   var isDone = !!done[id];
   return '<button type="button" class="slot ' + s.t + fullCls + (isDone ? " done" : "") + '" data-id="' + id + '" data-auth="' + s.a + '" data-kind="' + s.t + '" aria-pressed="' + isDone + '" title="' + esc(AUTH[s.a]) + '">' +
     '<span class="slot-top"><span>' + WHEN[s.s] + '</span><span class="kind"><span class="tick">Siap </span>' + KINDLBL[s.t] + '</span></span>' +
@@ -270,6 +304,17 @@ function render(){
   });
   document.getElementById("weeks").innerHTML = html;
   applyFilter();
+  updateStats();
+}
+
+// Update the done/not-done look of existing cards without rebuilding the page
+function applyDone(){
+  var nodes = document.querySelectorAll(".slot[data-id]");
+  for (var i = 0; i < nodes.length; i++) {
+    var n = nodes[i]; var d = !!done[n.getAttribute("data-id")];
+    n.classList.toggle("done", d);
+    n.setAttribute("aria-pressed", String(d));
+  }
   updateStats();
 }
 
@@ -311,26 +356,35 @@ document.getElementById("weeks").addEventListener("click", function(e){
   var id = el.getAttribute("data-id");
   var isDone = !done[id];
   if (isDone) done[id] = 1; else delete done[id];
-  
+
   el.classList.toggle("done", isDone);
   el.setAttribute("aria-pressed", String(isDone));
   updateStats();
-  syncToSheet(id, isDone); // Send update to Google Sheet
+
+  if (!isConfigured()) { setStatus("Belum disambung ke Google Sheet. Perubahan tidak disimpan.", "err"); return; }
+
+  pending[id] = isDone;
+  setStatus("Menyimpan...", "");
+  syncToSheet(id, isDone).then(function(){
+    if (pending[id] === isDone) delete pending[id];
+    setStatus("Disimpan dan dikongsi dengan pasukan pada " + timeNow(), "ok");
+  }).catch(function(err){
+    console.error("Failed to save", err);
+    if (pending[id] !== isDone) return; // a newer click already replaced this change
+    delete pending[id];
+    if (isDone) delete done[id]; else done[id] = 1; // undo, since it was not saved
+    applyDone();
+    setStatus("Gagal simpan. Perubahan dibatalkan. Semak akses Web App dan cuba lagi.", "err");
+  });
 });
 
-// Initial Render and Data Fetch
+// Initial render, then load the team's saved progress
 render();
+loadTeamData();
 
-(async function fetchTeamData() {
-  if (!WEB_APP_URL || WEB_APP_URL.includes("https://script.google.com/a/macros/southmax.com.my/s/AKfycbxuEODr5uvcGS8GKcfi1O4dCE_GNki4SN8ackIxzxRmOqzAMEUsC9-YDyOuI48E4z4/exec")) return;
-  try {
-    let response = await fetch(WEB_APP_URL + "?action=get");
-    done = await response.json();
-    render(); // Re-render UI with team data
-  } catch(e) {
-    console.error("Failed to sync team data", e);
-  }
-})();
+// Keep the page live: refresh while the tab is visible and when you switch back to it
+setInterval(function(){ if (!document.hidden) loadTeamData(); }, POLL_MS);
+document.addEventListener("visibilitychange", function(){ if (!document.hidden) loadTeamData(); });
 </script>
 </body>
 </html>

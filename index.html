@@ -154,10 +154,6 @@ header p { margin: 0; color: var(--muted); }
 .slot.done .junc { text-decoration: line-through; text-decoration-thickness: 2px; }
 .slot.done .tick { display: inline; }
 
-details.check { margin-top: 36px; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 12px 16px; }
-details.check summary { cursor: pointer; font-weight: 600; }
-details.check ol { margin: 10px 0 0; padding-left: 20px; }
-details.check li { margin-bottom: 8px; max-width: 78ch; }
 .foot { margin-top: 16px; color: var(--muted); font-size: 0.82rem; }
 
 @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
@@ -175,10 +171,12 @@ details.check li { margin-bottom: 8px; max-width: 78ch; }
 <div class="wrap">
   <header>
     <h1>Timeline video survey junction</h1>
-    <p>21 Sep – 3 Nov 2026. Tekan mana-mana sesi untuk tanda siap.</p>
+    <p>21 Sep – 3 Nov 2026. Data is synced live with the team!</p>
   </header>
 
-  <div class="stats" id="stats"></div>
+  <div class="stats" id="stats">
+    <p>Loading team progress...</p>
+  </div>
 
   <div class="filters" role="toolbar" aria-label="Tapis timeline">
     <div class="group" id="fAuth"><span class="lbl">Pihak berkuasa</span></div>
@@ -187,156 +185,86 @@ details.check li { margin-bottom: 8px; max-width: 78ch; }
 
   <main id="weeks"></main>
 
-  <details class="check">
-    <summary>Perkara untuk disemak dalam jadual asal</summary>
-    <ol>
-      <li><b>Tarikh dan hari tak sepadan pada minggu 12 Okt.</b> Dalam sheet, 14/10 ditulis Tuesday, 15/10 ditulis Wednesday dan 16/10 ditulis Thursday, tapi sebenarnya 14/10 ialah Wednesday, 15/10 Thursday dan 16/10 Friday. Aku ikut nama hari dan corak Mon–Thu, jadi sesi tu dianjak ke 13/10, 14/10 dan 15/10 (ditanda merah kecil dalam kad).</li>
-      <li><b>Ada sesi berulang.</b> A7+A33+A8+A9 (Before) ada pada 24/9 dan 6/10. B74+B75+B79 (Before) ada pada 22/9 dan 7/10. A11,A12 (After) ada pada 6/10 dan 3/11. Kalau ini retake, okay; kalau bukan, mungkin salah taip.</li>
-      <li><b>Fine-tune.</b> Aku letak fine-tune tepat 7 hari sebelum setiap sesi After (hari yang sama, minggu sebelumnya). A13 After pada 21/9 tak dapat fine-tune sebab 14/9 dah lepas. Tiga fine-tune (7/10, 22/10, 27/10) masuk dalam slot AM yang kosong. Sepuluh lagi jatuh pada hari yang dah ada sesi lain, ditanda "Bertindih" dan letak di bawah kad. Kalau fine-tune dibuat oleh kru yang sama dengan drone, sesi tu kena dianjak ke slot kosong (contoh Isnin).</li>
-      <li><b>A13 After (21/9) datang sebelum A13 Before (28/9).</b> Nota sheet cakap Before ikut masa tetap, After on demand, jadi mungkin memang disengajakan.</li>
-      <li><b>D12–D15 dan C42/C62</b> hanya ada video After, tiada Before dalam jadual.</li>
-    </ol>
-  </details>
-
   <p class="foot">Warna ikut sheet asal: merah jambu ialah Before, biru ialah After, kuning ialah fine-tune seminggu sebelum After, kelabu putus-putus ialah slot kosong.</p>
 </div>
 
 <script>
-var AUTH = {
-  MBJB: "Majlis Bandaraya Johor Bahru",
-  MBPG: "Majlis Bandaraya Pasir Gudang",
-  MBIP: "Majlis Bandaraya Iskandar Puteri",
-  MPKu: "Majlis Perbandaran Kulai"
-};
+// --- IMPORTANT: Paste your copied Web App URL inside the quotes below ---
+const WEB_APP_URL = "YOUR_WEB_APP_URL_HERE"; 
+// ------------------------------------------------------------------------
+
+var AUTH = { MBJB: "Majlis Bandaraya Johor Bahru", MBPG: "Majlis Bandaraya Pasir Gudang", MBIP: "Majlis Bandaraya Iskandar Puteri", MPKu: "Majlis Perbandaran Kulai" };
 var PK = "Phase 1+2 (combined)";
-function tune(sl, a, j, forD, clash){
-  var o = {s: sl, t: "tune", a: a, p: "Fine-tune", j: j, n: "Untuk After " + forD};
-  if (clash) o.flag = "Bertindih dengan sesi lain hari ni";
-  return o;
-}
+function tune(sl, a, j, forD, clash){ var o = {s: sl, t: "tune", a: a, p: "Fine-tune", j: j, n: "Untuk After " + forD}; if (clash) o.flag = "Bertindih dengan sesi lain hari ni"; return o; }
 var DATA = [
   ["2026-09-21", [{s:"full",t:"after",a:"MBJB",p:"Phase 1",j:"A13",n:"Before: fix time. After: on demand."}]],
-  ["2026-09-22", [
-    {s:"am",t:"before",a:"MBJB",p:"Phase 2",j:"B74 + B75 + B79"},
-    {s:"pm",t:"before",a:"MPKu",p:PK,j:"(PT001K + PT002K + PT003K) + PT004K",n:"PT004K: scout lebuh Putra Utama & Persiaran Indahpura Utama (roundabout)"}]],
-  ["2026-09-23", [
-    {s:"am",t:"before",a:"MPKu",p:"Phase 2",j:"356T"},
-    {s:"pm",t:"before",a:"MPKu",p:PK,j:"PT008K, (376T + PT009K)"}]],
-  ["2026-09-24", [
-    {s:"am",t:"before",a:"MBPG",p:"Phase 2",j:"A7 + A33 + A8 + A9"},
-    {s:"pm",t:"before",a:"MPKu",p:PK,j:"PT005K + PT006K"}]],
-
+  ["2026-09-22", [ {s:"am",t:"before",a:"MBJB",p:"Phase 2",j:"B74 + B75 + B79"}, {s:"pm",t:"before",a:"MPKu",p:PK,j:"(PT001K + PT002K + PT003K) + PT004K",n:"PT004K: scout lebuh Putra Utama & Persiaran Indahpura Utama (roundabout)"}]],
+  ["2026-09-23", [ {s:"am",t:"before",a:"MPKu",p:"Phase 2",j:"356T"}, {s:"pm",t:"before",a:"MPKu",p:PK,j:"PT008K, (376T + PT009K)"}]],
+  ["2026-09-24", [ {s:"am",t:"before",a:"MBPG",p:"Phase 2",j:"A7 + A33 + A8 + A9"}, {s:"pm",t:"before",a:"MPKu",p:PK,j:"PT005K + PT006K"}]],
   ["2026-09-28", [{s:"full",t:"before",a:"MBJB",p:"Phase 1",j:"A13"}]],
-  ["2026-09-29", [{s:"full",t:"before",a:"MBPG",p:"Phase 2",j:"A11, A12"}],
-    [tune("x","MBPG","A11, A12","6/10",1)]],
+  ["2026-09-29", [{s:"full",t:"before",a:"MBPG",p:"Phase 2",j:"A11, A12"}], [tune("x","MBPG","A11, A12","6/10",1)]],
   ["2026-09-30", [{s:"full",t:"before",a:"MBIP",p:"Phase 2",j:"B45, (D1/D2 + D2/D3)"}]],
-  ["2026-10-01", [{s:"full",t:"before",a:"MBJB",p:"Phase 2",j:"B39 + B40"}],
-    [tune("x","MBIP","(D12 – D15)","8/10",1)]],
-
+  ["2026-10-01", [{s:"full",t:"before",a:"MBJB",p:"Phase 2",j:"B39 + B40"}], [tune("x","MBIP","(D12 – D15)","8/10",1)]],
   ["2026-10-05", [{s:"full",t:"free"}]],
-  ["2026-10-06", [
-    {s:"am",t:"after",a:"MBPG",p:"Phase 2",j:"A11, A12"},
-    {s:"pm",t:"before",a:"MBPG",p:"Phase 2",j:"A7 + A33 + A8 + A9"}],
-    [tune("x","MPKu","356T","13/10",1), tune("x","MPKu","(PT001K + PT002K + PT003K) + PT004K","13/10",1)]],
-  ["2026-10-07", [
-    tune("am","MBPG","A7 + A33 + A8 + A9","14/10"),
-    {s:"pm",t:"before",a:"MBJB",p:"Phase 2",j:"B74 + B75 + B79"}]],
-  ["2026-10-08", [{s:"full",t:"after",a:"MBIP",p:"Phase 2",j:"(D12 – D15)"}],
-    [tune("x","MBIP","B45, (D1 – D2)","15/10",1)]],
-
+  ["2026-10-06", [ {s:"am",t:"after",a:"MBPG",p:"Phase 2",j:"A11, A12"}, {s:"pm",t:"before",a:"MBPG",p:"Phase 2",j:"A7 + A33 + A8 + A9"}], [tune("x","MPKu","356T","13/10",1), tune("x","MPKu","(PT001K + PT002K + PT003K) + PT004K","13/10",1)]],
+  ["2026-10-07", [ tune("am","MBPG","A7 + A33 + A8 + A9","14/10"), {s:"pm",t:"before",a:"MBJB",p:"Phase 2",j:"B74 + B75 + B79"}]],
+  ["2026-10-08", [{s:"full",t:"after",a:"MBIP",p:"Phase 2",j:"(D12 – D15)"}], [tune("x","MBIP","B45, (D1 – D2)","15/10",1)]],
   ["2026-10-12", [{s:"full",t:"free"}]],
-  ["2026-10-13", [
-    {s:"am",t:"after",a:"MPKu",p:"Phase 2",j:"356T"},
-    {s:"pm",t:"after",a:"MPKu",p:PK,j:"(PT001K + PT002K + PT003K) + PT004K",flag:"Dalam sheet: 14/10 (Tuesday)"}],
-    [tune("x","MBJB","B39 + B40","20/10",1)]],
-  ["2026-10-14", [{s:"full",t:"after",a:"MBPG",p:"Phase 2",j:"A7 + A33 + A8 + A9",flag:"Dalam sheet: 15/10 (Wednesday)"}],
-    [tune("x","MBJB","B74 + B75 + B79","21/10",1)]],
-  ["2026-10-15", [{s:"full",t:"after",a:"MBIP",p:"Phase 2",j:"B45, (D1 – D2)",flag:"Dalam sheet: 16/10 (Thursday)"}],
-    [tune("x","MPKu","PT008K, (376T + PT009K)","22/10",1)]],
-
+  ["2026-10-13", [ {s:"am",t:"after",a:"MPKu",p:"Phase 2",j:"356T"}, {s:"pm",t:"after",a:"MPKu",p:PK,j:"(PT001K + PT002K + PT003K) + PT004K",flag:"Dalam sheet: 14/10 (Tuesday)"}], [tune("x","MBJB","B39 + B40","20/10",1)]],
+  ["2026-10-14", [{s:"full",t:"after",a:"MBPG",p:"Phase 2",j:"A7 + A33 + A8 + A9",flag:"Dalam sheet: 15/10 (Wednesday)"}], [tune("x","MBJB","B74 + B75 + B79","21/10",1)]],
+  ["2026-10-15", [{s:"full",t:"after",a:"MBIP",p:"Phase 2",j:"B45, (D1 – D2)",flag:"Dalam sheet: 16/10 (Thursday)"}], [tune("x","MPKu","PT008K, (376T + PT009K)","22/10",1)]],
   ["2026-10-19", [{s:"full",t:"free"}]],
-  ["2026-10-20", [{s:"full",t:"after",a:"MBJB",p:"Phase 2",j:"B39 + B40"}],
-    [tune("x","MPKu","PT005K + PT006K","27/10",1)]],
-  ["2026-10-21", [{s:"full",t:"after",a:"MBJB",p:"Phase 2",j:"B74 + B75 + B79"}],
-    [tune("x","MBJB","C42","28/10",1)]],
-  ["2026-10-22", [
-    tune("am","MBJB","C62","29/10"),
-    {s:"pm",t:"after",a:"MPKu",p:PK,j:"PT008K, (376T + PT009K)"}]],
-
+  ["2026-10-20", [{s:"full",t:"after",a:"MBJB",p:"Phase 2",j:"B39 + B40"}], [tune("x","MPKu","PT005K + PT006K","27/10",1)]],
+  ["2026-10-21", [{s:"full",t:"after",a:"MBJB",p:"Phase 2",j:"B74 + B75 + B79"}], [tune("x","MBJB","C42","28/10",1)]],
+  ["2026-10-22", [ tune("am","MBJB","C62","29/10"), {s:"pm",t:"after",a:"MPKu",p:PK,j:"PT008K, (376T + PT009K)"}]],
   ["2026-10-26", [{s:"full",t:"free"}]],
-  ["2026-10-27", [
-    tune("am","MBPG","A11, A12","3/11"),
-    {s:"pm",t:"after",a:"MPKu",p:PK,j:"PT005K + PT006K"}]],
-  ["2026-10-28", [
-    {s:"am",t:"after",a:"MBJB",p:"Phase 1",j:"C42"},
-    {s:"pm",t:"free"}]],
-  ["2026-10-29", [
-    {s:"am",t:"after",a:"MBJB",p:"Phase 1",j:"C62"},
-    {s:"pm",t:"free"}]],
-
+  ["2026-10-27", [ tune("am","MBPG","A11, A12","3/11"), {s:"pm",t:"after",a:"MPKu",p:PK,j:"PT005K + PT006K"}]],
+  ["2026-10-28", [ {s:"am",t:"after",a:"MBJB",p:"Phase 1",j:"C42"}, {s:"pm",t:"free"}]],
+  ["2026-10-29", [ {s:"am",t:"after",a:"MBJB",p:"Phase 1",j:"C62"}, {s:"pm",t:"free"}]],
   ["2026-11-02", [{s:"full",t:"free"}]],
-  ["2026-11-03", [
-    {s:"am",t:"free"},
-    {s:"pm",t:"after",a:"MBPG",p:"Phase 2",j:"A11, A12"}]]
+  ["2026-11-03", [ {s:"am",t:"free"}, {s:"pm",t:"after",a:"MBPG",p:"Phase 2",j:"A11, A12"}]]
 ];
 
-var DAYN = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-var MON = ["Jan","Feb","Mac","Apr","Mei","Jun","Jul","Ogo","Sep","Okt","Nov","Dis"];
-var WHEN = {am:"AM", pm:"PM", full:"AM/PM", x:"Tambahan"};
-var KINDLBL = {before:"Before", after:"After", tune:"Fine-tune"};
-
+var DAYN = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]; var MON = ["Jan","Feb","Mac","Apr","Mei","Jun","Jul","Ogo","Sep","Okt","Nov","Dis"];
+var WHEN = {am:"AM", pm:"PM", full:"AM/PM", x:"Tambahan"}; var KINDLBL = {before:"Before", after:"After", tune:"Fine-tune"};
 function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 function parse(k){ var p = k.split("-"); return new Date(+p[0], +p[1]-1, +p[2]); }
 function fmt(d){ return d.getDate() + " " + MON[d.getMonth()]; }
 function keyOf(d){ var m = d.getMonth()+1, dd = d.getDate(); return d.getFullYear()+"-"+(m<10?"0":"")+m+"-"+(dd<10?"0":"")+dd; }
 function mondayOf(d){ var x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); var w = (x.getDay()+6)%7; x.setDate(x.getDate()-w); return keyOf(x); }
+function idOf(dateKey, s, idx){ return dateKey + "-" + s.s + (s.s === "x" ? idx : ""); }
 
 var done = {};
-try { done = JSON.parse(localStorage.getItem("vs-done-2026") || "{}") || {}; } catch (e) { done = {}; }
-function saveDone(){ try { localStorage.setItem("vs-done-2026", JSON.stringify(done)); } catch (e) {} }
-
 var filt = { auth: "all", kind: "all" };
 
-function idOf(dateKey, s, idx){ return dateKey + "-" + s.s + (s.s === "x" ? idx : ""); }
+// Sync function to push to Google Sheets via GET request
+function syncToSheet(id, isDone) {
+  if (!WEB_APP_URL || WEB_APP_URL.includes("YOUR_WEB_APP_URL_HERE")) return;
+  fetch(WEB_APP_URL + "?action=set&id=" + encodeURIComponent(id) + "&done=" + isDone, { mode: 'no-cors' });
+}
 
 function slotHTML(dateKey, s, idx){
   var id = idOf(dateKey, s, idx);
   var fullCls = s.s === "full" ? " full" : "";
-  if (s.t === "free") {
-    return '<div class="slot free' + fullCls + '"><div class="slot-top"><span>' + WHEN[s.s] + '</span></div><span class="free-txt">Kosong</span></div>';
-  }
+  if (s.t === "free") return '<div class="slot free' + fullCls + '"><div class="slot-top"><span>' + WHEN[s.s] + '</span></div><span class="free-txt">Kosong</span></div>';
+  
   var isDone = !!done[id];
   return '<button type="button" class="slot ' + s.t + fullCls + (isDone ? " done" : "") + '" data-id="' + id + '" data-auth="' + s.a + '" data-kind="' + s.t + '" aria-pressed="' + isDone + '" title="' + esc(AUTH[s.a]) + '">' +
     '<span class="slot-top"><span>' + WHEN[s.s] + '</span><span class="kind"><span class="tick">Siap </span>' + KINDLBL[s.t] + '</span></span>' +
-    '<span class="junc">' + esc(s.j) + '</span>' +
-    '<span class="meta">' + esc(s.a) + ', ' + esc(s.p) + '</span>' +
-    (s.n ? '<span class="note">' + esc(s.n) + '</span>' : '') +
-    (s.flag ? '<span class="flag">' + esc(s.flag) + '</span>' : '') +
-  '</button>';
+    '<span class="junc">' + esc(s.j) + '</span><span class="meta">' + esc(s.a) + ', ' + esc(s.p) + '</span>' +
+    (s.n ? '<span class="note">' + esc(s.n) + '</span>' : '') + (s.flag ? '<span class="flag">' + esc(s.flag) + '</span>' : '') + '</button>';
 }
 
 function render(){
   var weeks = {}, order = [];
-  DATA.forEach(function(row){
-    var wk = mondayOf(parse(row[0]));
-    if (!weeks[wk]) { weeks[wk] = []; order.push(wk); }
-    weeks[wk].push(row);
-  });
-  var todayKey = keyOf(new Date());
-  var html = "";
+  DATA.forEach(function(row){ var wk = mondayOf(parse(row[0])); if (!weeks[wk]) { weeks[wk] = []; order.push(wk); } weeks[wk].push(row); });
+  var todayKey = keyOf(new Date()); var html = "";
   order.forEach(function(wk, i){
-    var rows = weeks[wk];
-    var first = parse(rows[0][0]), last = parse(rows[rows.length-1][0]);
+    var rows = weeks[wk]; var first = parse(rows[0][0]), last = parse(rows[rows.length-1][0]);
     html += '<section class="week"><h2>Minggu ' + (i+1) + ' <small>' + fmt(first) + ' – ' + fmt(last) + '</small></h2><div class="grid">';
     rows.forEach(function(row){
-      var d = parse(row[0]);
-      var isToday = row[0] === todayKey;
-      var slots = row[1];
-      // ensure am/pm ordering
-      html += '<div class="day' + (isToday ? " today" : "") + '" id="d-' + row[0] + '">' +
-        '<div class="day-h"><b>' + DAYN[d.getDay()] + '</b><span>' + (isToday ? '<span class="badge-today">Hari ini</span> ' : '') + fmt(d) + '</span></div>' +
-        '<div class="slots">' + slots.map(function(s, k){ return slotHTML(row[0], s, k); }).join("") + '</div>' +
-        (row[2] ? '<div class="extras">' + row[2].map(function(s, k){ return slotHTML(row[0], s, k); }).join("") + '</div>' : '') + '</div>';
+      var d = parse(row[0]); var isToday = row[0] === todayKey; var slots = row[1];
+      html += '<div class="day' + (isToday ? " today" : "") + '" id="d-' + row[0] + '"><div class="day-h"><b>' + DAYN[d.getDay()] + '</b><span>' + (isToday ? '<span class="badge-today">Hari ini</span> ' : '') + fmt(d) + '</span></div><div class="slots">' + slots.map(function(s, k){ return slotHTML(row[0], s, k); }).join("") + '</div>' + (row[2] ? '<div class="extras">' + row[2].map(function(s, k){ return slotHTML(row[0], s, k); }).join("") + '</div>' : '') + '</div>';
     });
     html += '</div></section>';
   });
@@ -347,54 +275,29 @@ function render(){
 
 function allSlots(){
   var out = [];
-  DATA.forEach(function(row){
-    row[1].forEach(function(s, k){ if (s.t !== "free") out.push({id: idOf(row[0], s, k), t: s.t, date: row[0]}); });
-    (row[2] || []).forEach(function(s, k){ out.push({id: idOf(row[0], s, k), t: s.t, date: row[0]}); });
-  });
+  DATA.forEach(function(row){ row[1].forEach(function(s, k){ if (s.t !== "free") out.push({id: idOf(row[0], s, k), t: s.t, date: row[0]}); }); (row[2] || []).forEach(function(s, k){ out.push({id: idOf(row[0], s, k), t: s.t, date: row[0]}); }); });
   return out;
 }
 
 function updateStats(){
-  var slots = allSlots();
-  var before = slots.filter(function(x){ return x.t === "before"; }).length;
-  var after = slots.filter(function(x){ return x.t === "after"; }).length;
-  var tn = slots.filter(function(x){ return x.t === "tune"; }).length;
-  var doneN = slots.filter(function(x){ return done[x.id]; }).length;
-  var days = {}; slots.forEach(function(x){ days[x.date] = 1; });
+  var slots = allSlots(); var before = slots.filter(function(x){ return x.t === "before"; }).length;
+  var after = slots.filter(function(x){ return x.t === "after"; }).length; var tn = slots.filter(function(x){ return x.t === "tune"; }).length;
+  var doneN = slots.filter(function(x){ return done[x.id]; }).length; var days = {}; slots.forEach(function(x){ days[x.date] = 1; });
   var pct = slots.length ? Math.round(doneN / slots.length * 100) : 0;
-  document.getElementById("stats").innerHTML =
-    '<div class="stat"><b>' + (before + after) + '</b><span>sesi rakaman</span></div>' +
-    '<div class="stat"><b>' + before + '</b><span>Before</span></div>' +
-    '<div class="stat"><b>' + after + '</b><span>After</span></div>' +
-    '<div class="stat"><b>' + tn + '</b><span>Fine-tune</span></div>' +
-    '<div class="stat"><b>' + Object.keys(days).length + '</b><span>hari turun lapangan</span></div>' +
-    '<div class="stat progress"><b>' + doneN + ' / ' + slots.length + '</b><span>siap (' + pct + '%)</span><div class="bar"><i style="width:' + pct + '%"></i></div></div>';
+  document.getElementById("stats").innerHTML = '<div class="stat"><b>' + (before + after) + '</b><span>sesi rakaman</span></div><div class="stat"><b>' + before + '</b><span>Before</span></div><div class="stat"><b>' + after + '</b><span>After</span></div><div class="stat"><b>' + tn + '</b><span>Fine-tune</span></div><div class="stat"><b>' + Object.keys(days).length + '</b><span>hari turun lapangan</span></div><div class="stat progress"><b>' + doneN + ' / ' + slots.length + '</b><span>siap (' + pct + '%)</span><div class="bar"><i style="width:' + pct + '%"></i></div></div>';
 }
 
 function applyFilter(){
   var nodes = document.querySelectorAll(".slot[data-auth]");
-  for (var i = 0; i < nodes.length; i++) {
-    var n = nodes[i];
-    var ok = (filt.auth === "all" || n.getAttribute("data-auth") === filt.auth) &&
-             (filt.kind === "all" || n.getAttribute("data-kind") === filt.kind);
-    n.classList.toggle("dim", !ok);
-  }
+  for (var i = 0; i < nodes.length; i++) { var n = nodes[i]; var ok = (filt.auth === "all" || n.getAttribute("data-auth") === filt.auth) && (filt.kind === "all" || n.getAttribute("data-kind") === filt.kind); n.classList.toggle("dim", !ok); }
 }
 
 function buildChips(containerId, key, items){
   var box = document.getElementById(containerId);
   items.forEach(function(it){
-    var b = document.createElement("button");
-    b.type = "button"; b.className = "chip"; b.textContent = it.label;
-    b.setAttribute("data-v", it.value);
-    b.setAttribute("aria-pressed", it.value === "all" ? "true" : "false");
+    var b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = it.label; b.setAttribute("data-v", it.value); b.setAttribute("aria-pressed", it.value === "all" ? "true" : "false");
     if (it.title) b.title = it.title;
-    b.addEventListener("click", function(){
-      filt[key] = it.value;
-      var sibs = box.querySelectorAll(".chip");
-      for (var i = 0; i < sibs.length; i++) sibs[i].setAttribute("aria-pressed", sibs[i] === b ? "true" : "false");
-      applyFilter();
-    });
+    b.addEventListener("click", function(){ filt[key] = it.value; var sibs = box.querySelectorAll(".chip"); for (var i = 0; i < sibs.length; i++) sibs[i].setAttribute("aria-pressed", sibs[i] === b ? "true" : "false"); applyFilter(); });
     box.appendChild(b);
   });
 }
@@ -406,17 +309,27 @@ document.getElementById("weeks").addEventListener("click", function(e){
   var el = e.target.closest ? e.target.closest(".slot[data-id]") : null;
   if (!el) return;
   var id = el.getAttribute("data-id");
-  if (done[id]) delete done[id]; else done[id] = 1;
-  saveDone();
-  el.classList.toggle("done", !!done[id]);
-  el.setAttribute("aria-pressed", String(!!done[id]));
+  var isDone = !done[id];
+  if (isDone) done[id] = 1; else delete done[id];
+  
+  el.classList.toggle("done", isDone);
+  el.setAttribute("aria-pressed", String(isDone));
   updateStats();
+  syncToSheet(id, isDone); // Send update to Google Sheet
 });
 
+// Initial Render and Data Fetch
 render();
-(function(){
-  var t = document.querySelector(".day.today");
-  if (t && t.id !== "d-2026-09-21") { try { t.scrollIntoView({block:"center"}); } catch (e) {} }
+
+(async function fetchTeamData() {
+  if (!WEB_APP_URL || WEB_APP_URL.includes("https://script.google.com/a/macros/southmax.com.my/s/AKfycbxuEODr5uvcGS8GKcfi1O4dCE_GNki4SN8ackIxzxRmOqzAMEUsC9-YDyOuI48E4z4/exec")) return;
+  try {
+    let response = await fetch(WEB_APP_URL + "?action=get");
+    done = await response.json();
+    render(); // Re-render UI with team data
+  } catch(e) {
+    console.error("Failed to sync team data", e);
+  }
 })();
 </script>
 </body>

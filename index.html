@@ -186,6 +186,15 @@ header p.sync.err { color: var(--before-line); font-weight: 600; }
 .status-chip.delayed { background: var(--delay-line); color: #fff; }
 .status-chip.cancelled { background: var(--cancel-line); color: #fff; }
 
+.slot-card.card-conflict { box-shadow: inset 0 0 0 2px var(--before-line); }
+.conflict-tag { display: inline-block; font-size: 0.76rem; font-weight: 700; color: var(--before-ink); background: var(--before-bg); border: 1px solid var(--before-line); border-radius: 3px; padding: 0 5px; margin-top: 3px; }
+.resolved-tag { display: inline-block; font-size: 0.76rem; font-weight: 700; color: #1e5b3a; background: #d5edda; border: 1px solid #4c9c6d; border-radius: 3px; padding: 0 5px; margin-top: 3px; }
+
+details.check { margin-top: 36px; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 12px 16px; }
+details.check summary { cursor: pointer; font-weight: 600; }
+details.check ol { margin: 10px 0 0; padding-left: 20px; }
+details.check li { margin-bottom: 8px; max-width: 78ch; }
+
 .slot-footer { border-top: 1px dashed currentColor; opacity: 0.95; padding: 6px 10px 8px; display: flex; flex-direction: column; gap: 3px; }
 .note-btn {
   font: inherit; font-size: 0.78rem; font-weight: 600; color: inherit;
@@ -246,7 +255,32 @@ dialog#noteDialog::backdrop { background: rgba(15, 21, 29, 0.5); }
 
   <main id="weeks"></main>
 
-  <p class="foot">Warna ikut sheet asal: merah jambu ialah Before, biru ialah After, kuning ialah fine-tune seminggu sebelum After, kelabu putus-putus ialah slot kosong. Sempadan oren = tertangguh, sempadan kelabu = dibatalkan. Klik kad untuk tanda Siap; guna butang Nota untuk catat sebab tertangguh/dibatalkan.</p>
+  <details class="check">
+    <summary>Perkara untuk disemak dalam jadual asal</summary>
+    <ol>
+      <li><b>Tarikh dan hari tak sepadan pada minggu 12 Okt.</b> Dalam sheet, 14/10 ditulis Tuesday, 15/10 ditulis Wednesday dan 16/10 ditulis Thursday, tapi sebenarnya 14/10 ialah Wednesday, 15/10 Thursday dan 16/10 Friday. Aku ikut nama hari dan corak Mon–Thu, jadi sesi tu dianjak ke 13/10, 14/10 dan 15/10 (ditanda merah kecil dalam kad).</li>
+      <li><b>Ada sesi berulang.</b> A7+A33+A8+A9 (Before) ada pada 24/9 dan 6/10. B74+B75+B79 (Before) ada pada 22/9 dan 7/10. A11,A12 (After) ada pada 6/10 dan 3/11. Kalau ini retake, okay; kalau bukan, mungkin salah taip.</li>
+      <li><b>Fine-tune.</b> Aku letak fine-tune tepat 7 hari sebelum setiap sesi After (hari yang sama, minggu sebelumnya). A13 After pada 21/9 tak dapat fine-tune sebab 14/9 dah lepas. Tiga fine-tune (7/10, 22/10, 27/10) masuk dalam slot AM yang kosong. Sepuluh lagi jatuh pada hari yang dah ada sesi lain, ditanda "Bertindih" dan letak di bawah kad. Kalau fine-tune dibuat oleh kru yang sama dengan drone, sesi tu kena dianjak ke slot kosong (contoh Isnin).</li>
+      <li><b>A13 After (21/9) datang sebelum A13 Before (28/9).</b> Nota sheet cakap Before ikut masa tetap, After on demand, jadi mungkin memang disengajakan.</li>
+      <li><b>D12–D15 dan C42/C62</b> hanya ada video After, tiada Before dalam jadual.</li>
+    </ol>
+  </details>
+
+  <details class="check" style="margin-top:16px;">
+    <summary>Sync dengan perancangan virtual loop &amp; countdown timer</summary>
+    <ol>
+      <li><b>Dikemas kini 22/9/2026, ikut pengesahan team projek:</b> tiada lagi penukaran controller pending (semua persimpangan) - baki isu cuma virtual loop dan countdown timer sahaja.</li>
+      <li><b>A13 (After, 21/9) - selesai.</b> Countdown timer disahkan siap 22/9/2026, jadi tiada lagi konflik.</li>
+      <li><b>C42 (After, 28/10) - selesai.</b> Virtual loop disahkan siap 22/9/2026, mendahului rakaman ini.</li>
+      <li><b>PT003K (dalam sesi 13/10) - selesai.</b> Virtual loop disahkan siap 22/9/2026.</li>
+      <li><b>B45 (dalam sesi 15/10) - separuh selesai.</b> Virtual loop dah siap, tapi countdown timer masih pending (tiada tarikh lagi). Sahkan sebelum guna rakaman After.</li>
+      <li><b>356T dan PT002K (dalam sesi 13/10) - belum disahkan.</b> Status virtual loop/countdown timer kedua-dua kod ini belum disahkan oleh team projek; sila semak.</li>
+      <li><b>PT004K (dalam sesi 13/10) - belum disahkan.</b> Virtual loop dicatat "dijangka siap 30 Sept" tanpa tarikh pasti; sila sahkan.</li>
+      <li>Butiran penuh ada dalam sheet "Sync Video vs VL-CD" dalam fail Excel.</li>
+    </ol>
+  </details>
+
+  <p class="foot">Warna ikut sheet asal: merah jambu ialah Before, biru ialah After, kuning ialah fine-tune seminggu sebelum After, kelabu putus-putus ialah slot kosong. Sempadan oren = tertangguh, sempadan kelabu = dibatalkan. Sempadan dua garis merah = ada isu virtual loop/countdown timer (semak dalam kad). Klik kad untuk tanda Siap; guna butang Nota untuk catat sebab tertangguh/dibatalkan.</p>
 </div>
 
 <dialog id="noteDialog">
@@ -283,13 +317,13 @@ dialog#noteDialog::backdrop { background: rgba(15, 21, 29, 0.5); }
 // Google Apps Script Web App URL (saves progress + notes to your Google Sheet)
 const WEB_APP_URL = "https://script.google.com/a/macros/southmax.com.my/s/AKfycbxuEODr5uvcGS8GKcfi1O4dCE_GNki4SN8ackIxzxRmOqzAMEUsC9-YDyOuI48E4z4/exec";
 // How often (ms) to pull other people's changes while the page is open
-const POLL_MS = 20000;
+const POLL_MS = 4000;
 
 var AUTH = { MBJB: "Majlis Bandaraya Johor Bahru", MBPG: "Majlis Bandaraya Pasir Gudang", MBIP: "Majlis Bandaraya Iskandar Puteri", MPKu: "Majlis Perbandaran Kulai" };
 var PK = "Phase 1+2 (combined)";
 function tune(sl, a, j, forD, clash){ var o = {s: sl, t: "tune", a: a, p: "Fine-tune", j: j, n: "Untuk After " + forD}; if (clash) o.flag = "Bertindih dengan sesi lain hari ni"; return o; }
 var DATA = [
-  ["2026-09-21", [{s:"full",t:"after",a:"MBJB",p:"Phase 1",j:"A13",n:"Before: fix time. After: on demand."}]],
+  ["2026-09-21", [{s:"full",t:"after",a:"MBJB",p:"Phase 1",j:"A13",n:"Before: fix time. After: on demand.",resolved:"Countdown timer disahkan siap 22/9/2026 oleh team projek"}]],
   ["2026-09-22", [ {s:"am",t:"before",a:"MBJB",p:"Phase 2",j:"B74 + B75 + B79"}, {s:"pm",t:"before",a:"MPKu",p:PK,j:"(PT001K + PT002K + PT003K) + PT004K",n:"PT004K: scout lebuh Putra Utama & Persiaran Indahpura Utama (roundabout)"}]],
   ["2026-09-23", [ {s:"am",t:"before",a:"MPKu",p:"Phase 2",j:"356T"}, {s:"pm",t:"before",a:"MPKu",p:PK,j:"PT008K, (376T + PT009K)"}]],
   ["2026-09-24", [ {s:"am",t:"before",a:"MBPG",p:"Phase 2",j:"A7 + A33 + A8 + A9"}, {s:"pm",t:"before",a:"MPKu",p:PK,j:"PT005K + PT006K"}]],
@@ -302,16 +336,16 @@ var DATA = [
   ["2026-10-07", [ tune("am","MBPG","A7 + A33 + A8 + A9","14/10"), {s:"pm",t:"before",a:"MBJB",p:"Phase 2",j:"B74 + B75 + B79"}]],
   ["2026-10-08", [{s:"full",t:"after",a:"MBIP",p:"Phase 2",j:"(D12 – D15)"}], [tune("x","MBIP","B45, (D1 – D2)","15/10",1)]],
   ["2026-10-12", [{s:"full",t:"free"}]],
-  ["2026-10-13", [ {s:"am",t:"after",a:"MPKu",p:"Phase 2",j:"356T"}, {s:"pm",t:"after",a:"MPKu",p:PK,j:"(PT001K + PT002K + PT003K) + PT004K",flag:"Dalam sheet: 14/10 (Tuesday)"}], [tune("x","MBJB","B39 + B40","20/10",1)]],
+  ["2026-10-13", [ {s:"am",t:"after",a:"MPKu",p:"Phase 2",j:"356T",conflict:"Status virtual loop/countdown timer 356T belum disahkan oleh team projek - sila semak sebelum rakaman"}, {s:"pm",t:"after",a:"MPKu",p:PK,j:"(PT001K + PT002K + PT003K) + PT004K",flag:"Dalam sheet: 14/10 (Tuesday)",conflict:"PT002K: status belum disahkan, sila semak. PT004K: VL cuma 'dijangka siap 30 Sept', sila sahkan.",resolved:"PT003K: virtual loop disahkan siap 22/9/2026"}], [tune("x","MBJB","B39 + B40","20/10",1)]],
   ["2026-10-14", [{s:"full",t:"after",a:"MBPG",p:"Phase 2",j:"A7 + A33 + A8 + A9",flag:"Dalam sheet: 15/10 (Wednesday)"}], [tune("x","MBJB","B74 + B75 + B79","21/10",1)]],
-  ["2026-10-15", [{s:"full",t:"after",a:"MBIP",p:"Phase 2",j:"B45, (D1 – D2)",flag:"Dalam sheet: 16/10 (Thursday)"}], [tune("x","MPKu","PT008K, (376T + PT009K)","22/10",1)]],
+  ["2026-10-15", [{s:"full",t:"after",a:"MBIP",p:"Phase 2",j:"B45, (D1 – D2)",flag:"Dalam sheet: 16/10 (Thursday)",conflict:"B45: virtual loop dah siap, tapi countdown timer masih pending (tiada tarikh lagi) - sahkan sebelum rakaman After"}], [tune("x","MPKu","PT008K, (376T + PT009K)","22/10",1)]],
   ["2026-10-19", [{s:"full",t:"free"}]],
   ["2026-10-20", [{s:"full",t:"after",a:"MBJB",p:"Phase 2",j:"B39 + B40"}], [tune("x","MPKu","PT005K + PT006K","27/10",1)]],
   ["2026-10-21", [{s:"full",t:"after",a:"MBJB",p:"Phase 2",j:"B74 + B75 + B79"}], [tune("x","MBJB","C42","28/10",1)]],
   ["2026-10-22", [ tune("am","MBJB","C62","29/10"), {s:"pm",t:"after",a:"MPKu",p:PK,j:"PT008K, (376T + PT009K)"}]],
   ["2026-10-26", [{s:"full",t:"free"}]],
   ["2026-10-27", [ tune("am","MBPG","A11, A12","3/11"), {s:"pm",t:"after",a:"MPKu",p:PK,j:"PT005K + PT006K"}]],
-  ["2026-10-28", [ {s:"am",t:"after",a:"MBJB",p:"Phase 1",j:"C42"}, {s:"pm",t:"free"}]],
+  ["2026-10-28", [ {s:"am",t:"after",a:"MBJB",p:"Phase 1",j:"C42",resolved:"Virtual loop disahkan siap 22/9/2026, mendahului rakaman ini"}, {s:"pm",t:"free"}]],
   ["2026-10-29", [ {s:"am",t:"after",a:"MBJB",p:"Phase 1",j:"C62"}, {s:"pm",t:"free"}]],
   ["2026-11-02", [{s:"full",t:"free"}]],
   ["2026-11-03", [ {s:"am",t:"free"}, {s:"pm",t:"after",a:"MBPG",p:"Phase 2",j:"A11, A12"}]]
@@ -387,6 +421,7 @@ function slotHTML(dateKey, s, idx){
   var isDone = !!done[id];
   var nd = notes[id];
   var statusCls = nd && nd.status === "delayed" ? " card-delayed" : nd && nd.status === "cancelled" ? " card-cancelled" : "";
+  var conflictCls = (s.conflict || s.resolved) ? " card-conflict" : "";
   SLOTMETA[id] = fmt(parse(dateKey)) + " · " + WHEN[s.s] + " · " + KINDLBL[s.t] + " · " + s.j;
 
   var footer = '<div class="slot-footer">' +
@@ -397,11 +432,13 @@ function slotHTML(dateKey, s, idx){
   }
   footer += '</div>';
 
-  return '<div class="slot-card ' + s.t + fullCls + (isDone ? " done" : "") + statusCls + '" data-id="' + id + '" data-auth="' + s.a + '" data-kind="' + s.t + '">' +
+  return '<div class="slot-card ' + s.t + fullCls + (isDone ? " done" : "") + statusCls + conflictCls + '" data-id="' + id + '" data-auth="' + s.a + '" data-kind="' + s.t + '">' +
     '<button type="button" class="slot-toggle" data-id="' + id + '" aria-pressed="' + isDone + '" title="' + esc(AUTH[s.a]) + '">' +
     '<span class="slot-top"><span>' + WHEN[s.s] + '</span><span class="kind"><span class="tick">Siap </span>' + KINDLBL[s.t] + '</span></span>' +
     '<span class="junc">' + esc(s.j) + '</span><span class="meta">' + esc(s.a) + ', ' + esc(s.p) + '</span>' +
     (s.n ? '<span class="note">' + esc(s.n) + '</span>' : '') + (s.flag ? '<span class="flag">' + esc(s.flag) + '</span>' : '') +
+    (s.conflict ? '<span class="conflict-tag">⚠ ' + esc(s.conflict) + '</span>' : '') +
+    (s.resolved ? '<span class="resolved-tag">✓ ' + esc(s.resolved) + '</span>' : '') +
     '</button>' + footer + '</div>';
 }
 

@@ -300,6 +300,18 @@ dialog#noteDialog::backdrop { background: rgba(15, 21, 29, 0.5); }
     <label class="nd-field">Nama anda
       <input type="text" id="ndAuthor" placeholder="Nama anda" required>
     </label>
+    <hr style="width:100%; border: none; border-top: 1px solid var(--line); margin: 2px 0;">
+    <label class="nd-field">Status virtual loop / countdown timer
+      <select id="ndVL">
+        <option value="default">Ikut status asal dalam jadual</option>
+        <option value="none">Tiada isu</option>
+        <option value="issue">Ada isu (belum selesai)</option>
+        <option value="resolved">Isu diselesaikan</option>
+      </select>
+    </label>
+    <label class="nd-field">Nota virtual loop / countdown timer
+      <textarea id="ndVLNote" placeholder="Cth: Countdown timer disahkan siap 5 Okt"></textarea>
+    </label>
     <p class="nd-status" id="ndStatusMsg" role="status" aria-live="polite"></p>
     <div class="nd-actions">
       <div class="left">
@@ -388,7 +400,9 @@ function syncNote(id, payload){
   var qs = "?action=note&id=" + encodeURIComponent(id) +
     "&status=" + encodeURIComponent(payload.status) +
     "&note=" + encodeURIComponent(payload.note) +
-    "&author=" + encodeURIComponent(payload.author);
+    "&author=" + encodeURIComponent(payload.author) +
+    "&vl=" + encodeURIComponent(payload.vl) +
+    "&vlNote=" + encodeURIComponent(payload.vlNote);
   return fetch(WEB_APP_URL + qs)
     .then(function(r){ return r.json(); })
     .then(function(j){ if (!j || !j.ok) throw new Error("Unexpected response from Web App"); });
@@ -421,15 +435,18 @@ function slotHTML(dateKey, s, idx){
   var isDone = !!done[id];
   var nd = notes[id];
   var statusCls = nd && nd.status === "delayed" ? " card-delayed" : nd && nd.status === "cancelled" ? " card-cancelled" : "";
-  var conflictCls = (s.conflict || s.resolved) ? " card-conflict" : "";
   SLOTMETA[id] = fmt(parse(dateKey)) + " · " + WHEN[s.s] + " · " + KINDLBL[s.t] + " · " + s.j;
 
+  // Virtual loop / countdown timer status: team's saved override wins, else fall back to the schedule's own tag.
+  var vlState = nd && nd.vl && nd.vl !== "default" ? nd.vl : (s.conflict ? "issue" : s.resolved ? "resolved" : "none");
+  var vlText = nd && nd.vl && nd.vl !== "default" ? (nd.vlNote || "") : (s.conflict || s.resolved || "");
+  var conflictCls = (vlState === "issue" || vlState === "resolved") ? " card-conflict" : "";
+  var hasNote = !!(nd && (nd.note || (nd.status && nd.status !== "none") || (nd.vl && nd.vl !== "default")));
+
   var footer = '<div class="slot-footer">' +
-    '<button type="button" class="note-btn" data-id="' + id + '">' + (nd && (nd.note || (nd.status && nd.status !== "none")) ? "Edit nota" : "+ Tambah nota") + '</button>';
-  if (nd && (nd.note || (nd.status && nd.status !== "none"))) {
-    if (nd.status && nd.status !== "none") footer += '<span class="status-chip ' + nd.status + '">' + STATUSLBL[nd.status] + '</span>';
-    if (nd.note) footer += '<span class="note-preview" title="' + esc(nd.note) + '"><span class="note-author">' + esc(nd.author || "?") + ':</span> ' + esc(nd.note) + '</span>';
-  }
+    '<button type="button" class="note-btn" data-id="' + id + '">' + (hasNote ? "Edit nota" : "+ Tambah nota") + '</button>';
+  if (nd && nd.status && nd.status !== "none") footer += '<span class="status-chip ' + nd.status + '">' + STATUSLBL[nd.status] + '</span>';
+  if (nd && nd.note) footer += '<span class="note-preview" title="' + esc(nd.note) + '"><span class="note-author">' + esc(nd.author || "?") + ':</span> ' + esc(nd.note) + '</span>';
   footer += '</div>';
 
   return '<div class="slot-card ' + s.t + fullCls + (isDone ? " done" : "") + statusCls + conflictCls + '" data-id="' + id + '" data-auth="' + s.a + '" data-kind="' + s.t + '">' +
@@ -437,8 +454,8 @@ function slotHTML(dateKey, s, idx){
     '<span class="slot-top"><span>' + WHEN[s.s] + '</span><span class="kind"><span class="tick">Siap </span>' + KINDLBL[s.t] + '</span></span>' +
     '<span class="junc">' + esc(s.j) + '</span><span class="meta">' + esc(s.a) + ', ' + esc(s.p) + '</span>' +
     (s.n ? '<span class="note">' + esc(s.n) + '</span>' : '') + (s.flag ? '<span class="flag">' + esc(s.flag) + '</span>' : '') +
-    (s.conflict ? '<span class="conflict-tag">⚠ ' + esc(s.conflict) + '</span>' : '') +
-    (s.resolved ? '<span class="resolved-tag">✓ ' + esc(s.resolved) + '</span>' : '') +
+    (vlState === "issue" ? '<span class="conflict-tag">⚠ ' + esc(vlText) + '</span>' : '') +
+    (vlState === "resolved" ? '<span class="resolved-tag">✓ ' + esc(vlText) + '</span>' : '') +
     '</button>' + footer + '</div>';
 }
 
@@ -536,6 +553,8 @@ var ndAuthor = document.getElementById("ndAuthor");
 var ndStatusMsg = document.getElementById("ndStatusMsg");
 var ndDelete = document.getElementById("ndDelete");
 var currentNoteId = null;
+var ndVL = document.getElementById("ndVL");
+var ndVLNote = document.getElementById("ndVLNote");
 
 function openNoteDialog(id){
   currentNoteId = id;
@@ -544,6 +563,8 @@ function openNoteDialog(id){
   ndStatus.value = (existing && existing.status) || "none";
   ndNote.value = (existing && existing.note) || "";
   ndAuthor.value = localStorage.getItem("noteAuthor") || "";
+  ndVL.value = (existing && existing.vl) || "default";
+  ndVLNote.value = (existing && existing.vlNote) || "";
   ndStatusMsg.textContent = "";
   ndStatusMsg.className = "nd-status";
   ndDelete.style.display = existing ? "" : "none";
@@ -560,20 +581,20 @@ document.getElementById("noteForm").addEventListener("submit", function(e){
   var author = ndAuthor.value.trim();
   if (!author) { ndStatusMsg.textContent = "Sila masukkan nama anda."; ndStatusMsg.className = "nd-status err"; return; }
   localStorage.setItem("noteAuthor", author);
-  var payload = { status: ndStatus.value, note: ndNote.value.trim(), author: author };
+  var payload = { status: ndStatus.value, note: ndNote.value.trim(), author: author, vl: ndVL.value, vlNote: ndVLNote.value.trim() };
   saveNote(id, payload);
 });
 
 ndDelete.addEventListener("click", function(){
   if (!currentNoteId) return;
   var author = ndAuthor.value.trim() || localStorage.getItem("noteAuthor") || "";
-  saveNote(currentNoteId, { status: "none", note: "", author: author });
+  saveNote(currentNoteId, { status: "none", note: "", author: author, vl: "default", vlNote: "" });
 });
 
 function saveNote(id, payload){
   var prev = notes[id];
-  if (payload.status === "none" && !payload.note) delete notes[id];
-  else notes[id] = { status: payload.status, note: payload.note, author: payload.author, at: new Date().toISOString() };
+  if (payload.status === "none" && !payload.note && payload.vl === "default" && !payload.vlNote) delete notes[id];
+  else notes[id] = { status: payload.status, note: payload.note, author: payload.author, at: new Date().toISOString(), vl: payload.vl, vlNote: payload.vlNote };
   render();
 
   if (!isConfigured()) { setStatus("Belum disambung ke Google Sheet. Perubahan tidak disimpan.", "err"); dialog.close(); return; }

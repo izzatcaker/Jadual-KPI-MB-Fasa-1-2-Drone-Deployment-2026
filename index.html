@@ -206,6 +206,13 @@ details.check li { margin-bottom: 8px; max-width: 78ch; }
 
 dialog#noteDialog { border: none; border-radius: 8px; padding: 0; max-width: 420px; width: calc(100% - 32px); color: var(--ink); background: var(--surface); }
 dialog#noteDialog::backdrop { background: rgba(15, 21, 29, 0.5); }
+.nd-history { max-height: 160px; overflow-y: auto; border: 1px solid var(--line); border-radius: 5px; padding: 8px; display: flex; flex-direction: column; gap: 8px; font-size: 0.8rem; background: var(--bg); }
+.nd-history-empty { color: var(--muted); font-style: italic; margin: 0; }
+.nd-history-entry { padding-bottom: 6px; border-bottom: 1px dashed var(--line); }
+.nd-history-entry:last-child { border-bottom: none; padding-bottom: 0; }
+.nd-history-meta { font-weight: 600; display: flex; justify-content: space-between; gap: 8px; }
+.nd-history-tags { margin: 3px 0; display: flex; gap: 6px; flex-wrap: wrap; }
+.nd-history-vl { opacity: 0.85; }
 .nd-inner { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 12px; }
 .nd-inner h3 { margin: 0; font-size: 1.05rem; }
 .nd-context { font-size: 0.85rem; color: var(--muted); margin: -6px 0 2px; }
@@ -287,6 +294,12 @@ dialog#noteDialog::backdrop { background: rgba(15, 21, 29, 0.5); }
   <form class="nd-inner" method="dialog" id="noteForm">
     <h3>Nota slot</h3>
     <p class="nd-context" id="ndContext"></p>
+    <div class="nd-field">
+      <span>Sejarah nota</span>
+      <div class="nd-history" id="ndHistory"></div>
+    </div>
+    <hr style="width:100%; border: none; border-top: 1px solid var(--line); margin: 2px 0;">
+    <p class="nd-context" style="margin:0;">Tambah nota baru</p>
     <label class="nd-field">Status
       <select id="ndStatus">
         <option value="none">Tiada isu</option>
@@ -300,22 +313,10 @@ dialog#noteDialog::backdrop { background: rgba(15, 21, 29, 0.5); }
     <label class="nd-field">Nama anda
       <input type="text" id="ndAuthor" placeholder="Nama anda" required>
     </label>
-    <hr style="width:100%; border: none; border-top: 1px solid var(--line); margin: 2px 0;">
-    <label class="nd-field">Status virtual loop / countdown timer
-      <select id="ndVL">
-        <option value="default">Ikut status asal dalam jadual</option>
-        <option value="none">Tiada isu</option>
-        <option value="issue">Ada isu (belum selesai)</option>
-        <option value="resolved">Isu diselesaikan</option>
-      </select>
-    </label>
-    <label class="nd-field">Nota virtual loop / countdown timer
-      <textarea id="ndVLNote" placeholder="Cth: Countdown timer disahkan siap 5 Okt"></textarea>
-    </label>
     <p class="nd-status" id="ndStatusMsg" role="status" aria-live="polite"></p>
     <div class="nd-actions">
       <div class="left">
-        <button type="button" class="nd-btn danger" id="ndDelete">Padam nota</button>
+        <button type="button" class="nd-btn danger" id="ndDelete">Kosongkan status semasa</button>
       </div>
       <div class="right">
         <button type="button" class="nd-btn" id="ndCancel">Batal</button>
@@ -433,18 +434,18 @@ function slotHTML(dateKey, s, idx){
   if (s.t === "free") return '<div class="slot-card free' + fullCls + '"><div class="slot-toggle" style="cursor:default"><span class="slot-top"><span>' + WHEN[s.s] + '</span></span><span class="free-txt">Kosong</span></div></div>';
 
   var isDone = !!done[id];
-  var nd = notes[id];
+  var history = notes[id] || [];
+  var nd = history.length ? history[history.length - 1] : null; // latest entry drives the card's current status
   var statusCls = nd && nd.status === "delayed" ? " card-delayed" : nd && nd.status === "cancelled" ? " card-cancelled" : "";
   SLOTMETA[id] = fmt(parse(dateKey)) + " · " + WHEN[s.s] + " · " + KINDLBL[s.t] + " · " + s.j;
 
-  // Virtual loop / countdown timer status: team's saved override wins, else fall back to the schedule's own tag.
+  // Virtual loop / countdown timer status: team's latest saved entry wins, else fall back to the schedule's own tag.
   var vlState = nd && nd.vl && nd.vl !== "default" ? nd.vl : (s.conflict ? "issue" : s.resolved ? "resolved" : "none");
   var vlText = nd && nd.vl && nd.vl !== "default" ? (nd.vlNote || "") : (s.conflict || s.resolved || "");
   var conflictCls = (vlState === "issue" || vlState === "resolved") ? " card-conflict" : "";
-  var hasNote = !!(nd && (nd.note || (nd.status && nd.status !== "none") || (nd.vl && nd.vl !== "default")));
 
   var footer = '<div class="slot-footer">' +
-    '<button type="button" class="note-btn" data-id="' + id + '">' + (hasNote ? "Edit nota" : "+ Tambah nota") + '</button>';
+    '<button type="button" class="note-btn" data-id="' + id + '">' + (history.length ? "Lihat nota (" + history.length + ")" : "+ Tambah nota") + '</button>';
   if (nd && nd.status && nd.status !== "none") footer += '<span class="status-chip ' + nd.status + '">' + STATUSLBL[nd.status] + '</span>';
   if (nd && nd.note) footer += '<span class="note-preview" title="' + esc(nd.note) + '"><span class="note-author">' + esc(nd.author || "?") + ':</span> ' + esc(nd.note) + '</span>';
   footer += '</div>';
@@ -488,7 +489,7 @@ function updateStats(){
   var after = slots.filter(function(x){ return x.t === "after"; }).length; var tn = slots.filter(function(x){ return x.t === "tune"; }).length;
   var doneN = slots.filter(function(x){ return done[x.id]; }).length; var days = {}; slots.forEach(function(x){ days[x.date] = 1; });
   var pct = slots.length ? Math.round(doneN / slots.length * 100) : 0;
-  var flagged = slots.filter(function(x){ return notes[x.id] && notes[x.id].status && notes[x.id].status !== "none"; }).length;
+  var flagged = slots.filter(function(x){ var h = notes[x.id]; var last = h && h.length ? h[h.length - 1] : null; return last && last.status && last.status !== "none"; }).length;
   document.getElementById("stats").innerHTML = '<div class="stat"><b>' + (before + after) + '</b><span>sesi rakaman</span></div><div class="stat"><b>' + before + '</b><span>Before</span></div><div class="stat"><b>' + after + '</b><span>After</span></div><div class="stat"><b>' + tn + '</b><span>Fine-tune</span></div><div class="stat"><b>' + Object.keys(days).length + '</b><span>hari turun lapangan</span></div><div class="stat"><b>' + flagged + '</b><span>tertangguh/dibatalkan</span></div><div class="stat progress"><b>' + doneN + ' / ' + slots.length + '</b><span>siap (' + pct + '%)</span><div class="bar"><i style="width:' + pct + '%"></i></div></div>';
 }
 
@@ -553,21 +554,37 @@ var ndAuthor = document.getElementById("ndAuthor");
 var ndStatusMsg = document.getElementById("ndStatusMsg");
 var ndDelete = document.getElementById("ndDelete");
 var currentNoteId = null;
-var ndVL = document.getElementById("ndVL");
-var ndVLNote = document.getElementById("ndVLNote");
+
+function renderHistory(history){
+  var box = document.getElementById("ndHistory");
+  if (!history.length) { box.innerHTML = '<p class="nd-history-empty">Belum ada nota.</p>'; return; }
+  var html = history.slice().reverse().map(function(entry){
+    var when = entry.at ? new Date(entry.at).toLocaleString("ms-MY", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "";
+    var tags = "";
+    if (entry.status && entry.status !== "none") tags += '<span class="status-chip ' + entry.status + '">' + STATUSLBL[entry.status] + '</span>';
+    if (entry.vl && entry.vl !== "default" && entry.vl !== "none") tags += '<span class="' + (entry.vl === "issue" ? "conflict-tag" : "resolved-tag") + '">' + (entry.vl === "issue" ? "⚠" : "✓") + ' VL/CD</span>';
+    return '<div class="nd-history-entry">' +
+      '<div class="nd-history-meta"><span>' + esc(entry.author || "?") + '</span><span>' + esc(when) + '</span></div>' +
+      (tags ? '<div class="nd-history-tags">' + tags + '</div>' : "") +
+      (entry.note ? '<div>' + esc(entry.note) + '</div>' : "") +
+      (entry.vlNote ? '<div class="nd-history-vl"><i>VL/CD:</i> ' + esc(entry.vlNote) + '</div>' : "") +
+      '</div>';
+  }).join("");
+  box.innerHTML = html;
+}
 
 function openNoteDialog(id){
   currentNoteId = id;
-  var existing = notes[id];
+  var history = notes[id] || [];
+  var latest = history.length ? history[history.length - 1] : null;
   ndContext.textContent = SLOTMETA[id] || id;
-  ndStatus.value = (existing && existing.status) || "none";
-  ndNote.value = (existing && existing.note) || "";
+  renderHistory(history);
+  ndStatus.value = (latest && latest.status) || "none";
+  ndNote.value = ""; // a fresh entry, not an edit of the last one
   ndAuthor.value = localStorage.getItem("noteAuthor") || "";
-  ndVL.value = (existing && existing.vl) || "default";
-  ndVLNote.value = (existing && existing.vlNote) || "";
   ndStatusMsg.textContent = "";
   ndStatusMsg.className = "nd-status";
-  ndDelete.style.display = existing ? "" : "none";
+  ndDelete.style.display = history.length ? "" : "none";
   if (typeof dialog.showModal === "function") dialog.showModal();
   else alert("Pelayar ini tidak menyokong pop timbul nota. Sila guna Chrome versi terkini.");
 }
@@ -581,20 +598,23 @@ document.getElementById("noteForm").addEventListener("submit", function(e){
   var author = ndAuthor.value.trim();
   if (!author) { ndStatusMsg.textContent = "Sila masukkan nama anda."; ndStatusMsg.className = "nd-status err"; return; }
   localStorage.setItem("noteAuthor", author);
-  var payload = { status: ndStatus.value, note: ndNote.value.trim(), author: author, vl: ndVL.value, vlNote: ndVLNote.value.trim() };
+  var payload = { status: ndStatus.value, note: ndNote.value.trim(), author: author, vl: "default", vlNote: "" };
   saveNote(id, payload);
 });
 
 ndDelete.addEventListener("click", function(){
   if (!currentNoteId) return;
   var author = ndAuthor.value.trim() || localStorage.getItem("noteAuthor") || "";
+  if (!author) { ndStatusMsg.textContent = "Sila masukkan nama anda."; ndStatusMsg.className = "nd-status err"; return; }
+  localStorage.setItem("noteAuthor", author);
   saveNote(currentNoteId, { status: "none", note: "", author: author, vl: "default", vlNote: "" });
 });
 
+// Every save APPENDS a new entry to the slot's log; nothing already saved is ever overwritten.
 function saveNote(id, payload){
-  var prev = notes[id];
-  if (payload.status === "none" && !payload.note && payload.vl === "default" && !payload.vlNote) delete notes[id];
-  else notes[id] = { status: payload.status, note: payload.note, author: payload.author, at: new Date().toISOString(), vl: payload.vl, vlNote: payload.vlNote };
+  if (!notes[id]) notes[id] = [];
+  var entry = { status: payload.status, note: payload.note, author: payload.author, at: new Date().toISOString(), vl: payload.vl, vlNote: payload.vlNote };
+  notes[id].push(entry);
   render();
 
   if (!isConfigured()) { setStatus("Belum disambung ke Google Sheet. Perubahan tidak disimpan.", "err"); dialog.close(); return; }
@@ -606,7 +626,9 @@ function saveNote(id, payload){
     dialog.close();
   }).catch(function(err){
     console.error("Failed to save note", err);
-    if (prev) notes[id] = prev; else delete notes[id];
+    var idx = notes[id].indexOf(entry);
+    if (idx !== -1) notes[id].splice(idx, 1);
+    if (notes[id].length === 0) delete notes[id];
     render();
     ndStatusMsg.textContent = "Gagal simpan nota. Cuba lagi.";
     ndStatusMsg.className = "nd-status err";

@@ -147,6 +147,42 @@ header p.sync.err { color:var(--before-line); font-weight:600; }
 .pbar-h{display:flex;justify-content:space-between;gap:8px;font-size:.78rem;font-weight:700;flex-wrap:wrap}
 .pj{font-weight:700;overflow-wrap:anywhere}
 .free-add{align-self:flex-start;margin-top:4px;background:transparent}
+/* Today alert */
+.today-box { background:var(--surface); border:2px solid var(--navy); border-radius:8px; padding:12px 14px; margin:6px 0 14px; }
+.today-box.alert { border-color:var(--before-line); }
+.today-box h2 { margin:0 0 6px; font-size:1.05rem; font-weight:700; }
+.td-alert { margin:0 0 8px; font-weight:700; color:var(--before-line); }
+.td-ok { margin:0 0 8px; font-weight:700; color:var(--done); }
+.td-none { margin:0; color:var(--muted); }
+.td-item { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:6px 8px; border:1px solid var(--line); border-left:4px solid var(--navy); border-radius:5px; margin-top:6px; flex-wrap:wrap; }
+.td-item.ok { opacity:.6; border-left-color:var(--done); }
+.td-item.late { border-left-color:var(--before-line); }
+.td-m { color:var(--muted); font-size:.85rem; }
+.td-tag { font-size:.76rem; font-weight:700; color:var(--before-ink); background:var(--before-bg); border:1px solid var(--before-line); border-radius:3px; padding:0 5px; }
+.today-box details { margin-top:10px; }
+.today-box summary { cursor:pointer; font-weight:700; color:var(--before-line); }
+/* View modes */
+.mcal { display:flex; flex-direction:column; gap:6px; margin-top:16px; overflow-x:auto; }
+.mhead,.mweek { display:grid; grid-template-columns:repeat(7,minmax(120px,1fr)); gap:6px; min-width:860px; }
+.mhead div { font-weight:600; color:var(--muted); font-size:.85rem; padding:0 4px; }
+.mcell { background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:6px; min-height:96px; display:flex; flex-direction:column; gap:4px; }
+.mcell.wk { background:var(--free-bg); opacity:.7; }
+.mcell.today { border-color:var(--navy); box-shadow:0 0 0 2px var(--navy); }
+.mnum { font-size:.78rem; font-weight:700; color:var(--muted); }
+.mchip { font:inherit; font-size:.74rem; font-weight:600; text-align:left; border:1px solid; border-left-width:4px; border-radius:4px; padding:2px 5px; cursor:pointer; overflow-wrap:anywhere; }
+.mchip.before { background:var(--before-bg); border-color:var(--before-line); color:var(--before-ink); }
+.mchip.after { background:var(--after-bg); border-color:var(--after-line); color:var(--after-ink); }
+.mchip.tune { background:var(--tune-bg); border-color:var(--tune-line); color:var(--tune-ink); }
+.mchip.done { opacity:.6; text-decoration:line-through; }
+.mchip.dim { opacity:.22; }
+.compact .meta,.compact .note,.compact .flag,.compact .conflict-tag,.compact .resolved-tag,.compact .edited-tag,.compact .slot-footer .note-callout,.compact .pbar .note-callout { display:none; }
+.compact .slot-footer { padding:3px 8px 4px; }
+.compact .slot-toggle { padding:5px 8px 3px; }
+.compact .day { min-height:0; padding:8px; }
+.dm .foot-btns,.dm .free-add,.dm #addPeriod { display:none !important; }
+.dm .slot-toggle { cursor:default; }
+.dm .wrap { max-width:1500px; }
+.dm body, body.dm { font-size:16px; }
 details.check { margin-top:36px; background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:12px 16px; }
 details.check summary { cursor:pointer; font-weight:600; }
 details.check ol { margin:10px 0 0; padding-left:20px; }
@@ -200,12 +236,16 @@ dialog::backdrop { background:rgba(15,21,29,.5); }
 
   <div class="stats" id="stats"><p>Loading team progress...</p></div>
 
+  <section class="today-box" id="todayBox" aria-label="Tugasan hari ini"></section>
+
   <section class="feed" id="feed" hidden aria-label="Nota terkini"></section>
 
   <div class="filters" role="toolbar" aria-label="Tapis timeline">
     <div class="group" id="fAuth"><span class="lbl">Pihak berkuasa</span></div>
     <div class="group" id="fKind"><span class="lbl">Jenis video</span></div>
     <div class="group"><button type="button" class="chip" id="addPeriod">+ Tempoh fine-tune</button></div>
+    <div class="group" id="fView"><span class="lbl">Paparan</span></div>
+    <div class="group"><button type="button" class="chip" id="tCompact" aria-pressed="false">Ringkas</button><button type="button" class="chip" id="tDisplay" aria-pressed="false">Mod baca sahaja</button></div>
   </div>
 
   <main id="weeks"></main>
@@ -513,6 +553,7 @@ function slotHTML(dateKey, s, idx){
 function render(){
   deriveEdits();
   buildEff();
+  if (view.layout === "month") { document.getElementById("weeks").innerHTML = monthHTML(); applyFilter(); updateStats(); renderFeed(); renderToday(); return; }
   var weeks = {}, order = [];
   EFF.forEach(function(row){ var wk = mondayOf(parse(row[0])); if (!weeks[wk]) { weeks[wk] = []; order.push(wk); } weeks[wk].push(row); });
   var todayKey = keyOf(new Date()); var html = "";
@@ -531,6 +572,7 @@ function render(){
   applyFilter();
   updateStats();
   renderFeed();
+  renderToday();
 }
 
 var feedAll = false; // false = collapsed (default)
@@ -579,7 +621,7 @@ function updateStats(){
 }
 
 function applyFilter(){
-  var nodes = document.querySelectorAll(".slot-card[data-auth], .pbar[data-auth]");
+  var nodes = document.querySelectorAll(".slot-card[data-auth], .pbar[data-auth], .mchip[data-auth]");
   for (var i = 0; i < nodes.length; i++) { var n = nodes[i]; var ok = (filt.auth === "all" || n.getAttribute("data-auth") === filt.auth) && (filt.kind === "all" || n.getAttribute("data-kind") === filt.kind); n.classList.toggle("dim", !ok); }
 }
 
@@ -596,6 +638,14 @@ buildChips("fAuth", "auth", [{value:"all",label:"Semua"}].concat(Object.keys(AUT
 buildChips("fKind", "kind", [{value:"all",label:"Semua"},{value:"before",label:"Before"},{value:"after",label:"After"},{value:"tune",label:"Fine-tune"}]);
 
 document.getElementById("weeks").addEventListener("click", function(e){
+  var mc = e.target.closest ? e.target.closest(".mchip") : null;
+  if (mc) {
+    var gid = mc.getAttribute("data-go"); setLayout("week");
+    var tc = gid ? document.querySelector('.slot-card[data-id="' + gid + '"]') : null;
+    if (tc) { tc.scrollIntoView({ block: "center" }); tc.classList.add("flash"); }
+    return;
+  }
+  if (document.body.classList.contains("dm")) return;
   var toggle = e.target.closest ? e.target.closest(".slot-toggle[data-id]") : null;
   if (toggle) {
     var id = toggle.getAttribute("data-id");
@@ -604,7 +654,7 @@ document.getElementById("weeks").addEventListener("click", function(e){
     if (isDone) done[id] = 1; else delete done[id];
     card.classList.toggle("done", isDone);
     toggle.setAttribute("aria-pressed", String(isDone));
-    updateStats();
+    updateStats(); renderToday();
     if (!isConfigured()) { setStatus("Belum disambung ke Google Sheet. Perubahan tidak disimpan.", "err"); return; }
     pending[id] = isDone;
     setStatus("Menyimpan...", "");
@@ -789,6 +839,95 @@ $("edReset").addEventListener("click", function(){
   if (!author || !reason) { $("edMsg").textContent = "Isi nama dan sebab dahulu sebelum kembali ke asal."; $("edMsg").className = "nd-status err"; return; }
   safeStore("noteAuthor", author);
   pushEdit(id, { reset: true }, reason, author, "↺ Jadual dikembalikan ke asal.");
+});
+
+// --- View modes: week / list / month, compact, read-only display ---
+var view = { layout: "week", compact: false, dm: false };
+try { var sv = JSON.parse(localStorage.getItem("tlView") || "{}"); if (sv.layout === "week" || sv.layout === "month") view.layout = sv.layout; view.compact = !!sv.compact; view.dm = !!sv.dm; } catch (e) {}
+if (/[?&]display=1/.test(location.search)) view.dm = true;
+var LAYS = [["week", "Minggu"], ["month", "Bulan"]];
+function applyView(){
+  var c = document.body.classList;
+  LAYS.forEach(function(l){ c.toggle("lay-" + l[0], view.layout === l[0]); });
+  c.toggle("compact", view.compact); c.toggle("dm", view.dm);
+  Array.prototype.forEach.call(document.querySelectorAll("#fView .chip"), function(b){ b.setAttribute("aria-pressed", String(b.getAttribute("data-v") === view.layout)); });
+  document.getElementById("tCompact").setAttribute("aria-pressed", String(view.compact));
+  document.getElementById("tDisplay").setAttribute("aria-pressed", String(view.dm));
+  safeStore("tlView", JSON.stringify(view));
+}
+function setLayout(l){ view.layout = l; applyView(); render(); }
+LAYS.forEach(function(l){
+  var b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = l[1]; b.setAttribute("data-v", l[0]);
+  b.addEventListener("click", function(){ setLayout(l[0]); }); document.getElementById("fView").appendChild(b);
+});
+document.getElementById("tCompact").addEventListener("click", function(){ view.compact = !view.compact; applyView(); });
+document.getElementById("tDisplay").addEventListener("click", function(){ view.dm = !view.dm; applyView(); });
+
+function monthHTML(){
+  var weeks = {}, order = [], todayKey = keyOf(new Date());
+  EFF.forEach(function(row){ var wk = mondayOf(parse(row[0])); if (!weeks[wk]) { weeks[wk] = {}; order.push(wk); } weeks[wk][row[0]] = row; });
+  var html = '<div class="mcal"><div class="mhead">' + ["Isnin","Selasa","Rabu","Khamis","Jumaat","Sabtu","Ahad"].map(function(n){ return "<div>" + n + "</div>"; }).join("") + '</div>';
+  order.forEach(function(wk){
+    html += '<div class="mweek">';
+    for (var i = 0; i < 7; i++) {
+      var d = parse(wk); d.setDate(d.getDate() + i); var key = keyOf(d); var row = weeks[wk][key];
+      html += '<div class="mcell' + (i > 4 ? " wk" : "") + (key === todayKey ? " today" : "") + '"><div class="mnum">' + fmt(d) + '</div>';
+      if (row) row[1].concat(row[2] || []).forEach(function(s){
+        if (s.t === "free") return;
+        var h = notes[s._id] || [];
+        html += '<button type="button" class="mchip ' + s.t + (done[s._id] ? " done" : "") + '" data-go="' + s._id + '" data-auth="' + s.a + '" data-kind="' + s.t + '">' + WHEN[s.s] + ' · ' + esc(s.j) + (h.length ? " 📝" : "") + '</button>';
+      });
+      Object.keys(periods).forEach(function(pid){ var p = periods[pid]; if (key >= p.start && key <= p.end) html += '<button type="button" class="mchip tune" data-go="" data-auth="' + esc(p.a) + '" data-kind="tune">🔧 ' + esc(p.j) + '</button>'; });
+      html += '</div>';
+    }
+    html += '</div>';
+  });
+  return html + '</div>';
+}
+applyView();
+
+// --- Today alert ---
+function lastNd(id){ var h = notes[id] || []; return h.length ? h[h.length - 1] : null; }
+function tdItem(it, showDate){
+  return '<div class="td-item' + (it.done ? " ok" : showDate ? " late" : "") + '"><div><b>' + (showDate ? fmt(parse(it.date)) + ' · ' : '') + WHEN[it.s.s] + ' · ' + KINDLBL[it.s.t] + '</b> · ' + esc(it.s.j) + ' <span class="td-m">' + esc(it.s.a) + '</span>' +
+    (it.st === "delayed" ? ' <span class="status-chip delayed">Tertangguh</span>' : '') + (it.issue ? ' <span class="td-tag">⚠ Semak VL/CD</span>' : '') + (it.done ? ' ✓ Siap' : '') + '</div>' +
+    '<button type="button" class="fi-go" data-go="' + it.id + '">Pergi ke kad</button></div>';
+}
+function renderToday(){
+  var box = document.getElementById("todayBox"), td = new Date(), tk = keyOf(td), today = [], over = [], next = null;
+  EFF.forEach(function(row){
+    row[1].concat(row[2] || []).forEach(function(s){
+      if (s.t === "free" || !s._id) return;
+      var nd = lastNd(s._id), st = nd && nd.status && nd.status !== "none" ? nd.status : "";
+      if (st === "cancelled") return;
+      var vl = nd && nd.vl && nd.vl !== "default" ? nd.vl : (s.conflict ? "issue" : "none");
+      var it = { id: s._id, date: row[0], s: s, st: st, done: !!done[s._id], issue: vl === "issue" };
+      if (row[0] === tk) today.push(it); else if (row[0] < tk) { if (!it.done) over.push(it); } else if (!next) next = it;
+    });
+  });
+  var actP = [], overP = [];
+  Object.keys(periods).forEach(function(pid){ var p = periods[pid], dn = !!done["period:" + pid]; if (p.start <= tk && tk <= p.end) actP.push({ p: p, dn: dn }); else if (p.end < tk && !dn) overP.push(p); });
+  var left = today.filter(function(x){ return !x.done; }).length + actP.filter(function(x){ return !x.dn; }).length;
+  var html = '<h2>📅 Hari ini · ' + DAYN[td.getDay()] + ' ' + fmt(td) + '</h2>';
+  if (!today.length && !actP.length) {
+    html += '<p class="td-none">Tiada sesi hari ini.' + (next ? ' Seterusnya: ' + fmt(parse(next.date)) + ' · ' + WHEN[next.s.s] + ' · ' + KINDLBL[next.s.t] + ' · ' + esc(next.s.j) + '.' : '') + '</p>';
+  } else {
+    html += left ? '<p class="td-alert">⏰ ' + left + ' tugasan belum siap hari ini</p>' : '<p class="td-ok">✓ Semua tugasan hari ini siap</p>';
+    html += today.map(function(it){ return tdItem(it, false); }).join("");
+    actP.forEach(function(x){ html += '<div class="td-item' + (x.dn ? " ok" : "") + '"><div><b>🔧 Fine-tune (tempoh)</b> · ' + esc(x.p.j) + ' <span class="td-m">' + esc(x.p.a) + ' · ' + fmt(parse(x.p.start)) + ' – ' + fmt(parse(x.p.end)) + '</span>' + (x.dn ? ' ✓ Siap' : '') + '</div></div>'; });
+  }
+  var nOver = over.length + overP.length;
+  if (nOver) html += '<details><summary>⚠ ' + nOver + ' sesi tertunggak (tarikh lepas, belum ditanda siap)</summary>' + over.map(function(it){ return tdItem(it, true); }).join("") +
+    overP.map(function(p){ return '<div class="td-item late"><div><b>🔧 Fine-tune · ' + fmt(parse(p.start)) + ' – ' + fmt(parse(p.end)) + '</b> · ' + esc(p.j) + ' <span class="td-m">' + esc(p.a) + '</span></div></div>'; }).join("") + '</details>';
+  box.className = "today-box" + (left || nOver ? " alert" : "");
+  box.innerHTML = html;
+  document.title = (left ? "(" + left + ") " : "") + "Timeline Video Survey Junction, 21 Sep – 3 Nov 2026";
+}
+document.getElementById("todayBox").addEventListener("click", function(e){
+  var g = e.target.closest ? e.target.closest(".fi-go[data-go]") : null; if (!g) return;
+  if (view.layout === "month") setLayout("week");
+  var c = document.querySelector('.slot-card[data-id="' + g.getAttribute("data-go") + '"]');
+  if (c) { c.scrollIntoView({ behavior: "smooth", block: "center" }); c.classList.remove("flash"); void c.offsetWidth; c.classList.add("flash"); }
 });
 
 // --- Fine-tune periods ---

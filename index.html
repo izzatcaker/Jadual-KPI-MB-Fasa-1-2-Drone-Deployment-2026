@@ -81,7 +81,7 @@ header p.sync.err { color:var(--before-line); font-weight:600; }
 .week h2 { margin:0 0 10px; font-size:1.05rem; font-weight:600; display:flex; flex-wrap:wrap; gap:4px 12px; align-items:baseline; }
 .week h2 small { font-weight:400; color:var(--muted); font-size:.9rem; }
 .grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
-.day { background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:10px; display:flex; flex-direction:column; gap:8px; min-height:250px; }
+.day { background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:10px; display:flex; flex-direction:column; gap:8px; min-height:120px; }
 .day.today { border-color:var(--navy); box-shadow:0 0 0 2px var(--navy); }
 .day-h { display:flex; justify-content:space-between; align-items:baseline; }
 .day-h b { font-weight:600; }
@@ -106,7 +106,7 @@ header p.sync.err { color:var(--before-line); font-weight:600; }
 .slot-card.free { background:var(--free-bg); border:1px dashed var(--free-line); color:var(--muted); padding:8px 10px; }
 .slot-toggle { text-align:left; font:inherit; color:inherit; background:none; border:none; padding:8px 10px 6px; display:flex; flex-direction:column; gap:3px; cursor:pointer; width:100%; flex:1; }
 .slot-top { display:flex; justify-content:space-between; gap:6px; font-size:.8rem; font-weight:600; }
-.junc { font-weight:700; font-size:.98rem; line-height:1.3; overflow-wrap:anywhere; }
+.junc { font-weight:700; font-size:.93rem; line-height:1.3; overflow-wrap:anywhere; }
 .meta { font-size:.82rem; opacity:.88; }
 .note { font-size:.8rem; font-style:italic; opacity:.92; }
 .flag { font-size:.78rem; font-weight:600; border-top:1px dashed currentColor; padding-top:3px; margin-top:2px; }
@@ -121,16 +121,29 @@ header p.sync.err { color:var(--before-line); font-weight:600; }
 .edited-tag { display:inline-block; font-size:.76rem; font-weight:700; color:#fff; background:var(--navy); color:var(--navy-ink); border-radius:3px; padding:0 6px; margin-top:3px; }
 
 /* Card footer: prominent note */
-.slot-footer { border-top:1px dashed currentColor; padding:6px 8px 8px; display:flex; flex-direction:column; gap:6px; }
+.slot-footer { border-top:1px dashed currentColor; padding:5px 8px 6px; display:flex; flex-direction:column; gap:5px; }
 .note-callout { background:var(--note-bg); color:var(--note-ink); border:2px solid var(--note-line); border-radius:5px; padding:6px 8px; }
 .note-callout.delayed { border-color:var(--delay-line); }
 .note-callout.cancelled { border-color:var(--cancel-line); }
 .nc-h { display:flex; justify-content:space-between; gap:6px; font-size:.76rem; font-weight:700; flex-wrap:wrap; }
-.nc-b { font-size:.9rem; font-weight:600; margin-top:2px; overflow-wrap:anywhere; white-space:pre-wrap; }
+.nc-b { font-size:.85rem; font-weight:600; margin-top:2px; overflow-wrap:anywhere; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+.slot-toggle .conflict-tag,.slot-toggle .resolved-tag { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.slot-card.free .slot-toggle { flex-direction:row; flex-wrap:wrap; align-items:center; gap:4px 10px; }
+.slot-card.free { padding:6px 10px; }
+.slot-card.free .free-add { margin-top:0; }
 .foot-btns { display:flex; gap:6px; flex-wrap:wrap; }
-.note-btn,.edit-btn { font:inherit; font-size:.78rem; font-weight:600; color:inherit; background:rgba(255,255,255,.35); border:1px solid currentColor; border-radius:999px; padding:2px 10px; cursor:pointer; }
+.note-btn,.edit-btn { font:inherit; font-size:.74rem; line-height:1.5; font-weight:600; color:inherit; background:rgba(255,255,255,.35); border:1px solid currentColor; border-radius:999px; padding:0 9px; cursor:pointer; }
 .note-btn.has { background:var(--note-bg); color:var(--note-ink); border-color:var(--note-line); border-width:2px; }
 
+.pbars{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.pbar{background:var(--tune-bg);color:var(--tune-ink);border:2px solid var(--tune-line);border-radius:6px;padding:7px 10px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.pbar.dim{opacity:.22}
+.pbar.anch{margin-top:-6px;border-top-left-radius:0;border-left-width:6px}
+.pbar.done{opacity:.8}
+.pbar.done .pj{text-decoration:line-through;text-decoration-thickness:2px}
+.pbar-h{display:flex;justify-content:space-between;gap:8px;font-size:.78rem;font-weight:700;flex-wrap:wrap}
+.pj{font-weight:700;overflow-wrap:anywhere}
+.free-add{align-self:flex-start;margin-top:4px;background:transparent}
 details.check { margin-top:36px; background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:12px 16px; }
 details.check summary { cursor:pointer; font-weight:600; }
 details.check ol { margin:10px 0 0; padding-left:20px; }
@@ -161,7 +174,7 @@ dialog::backdrop { background:rgba(15,21,29,.5); }
 .nd-status.err { color:var(--before-line); }
 .foot { margin-top:16px; color:var(--muted); font-size:.82rem; }
 
-@media (max-width:900px) { .grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:900px) { .grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .pbars { grid-template-columns:minmax(0,1fr); } .pbar { grid-column:auto !important; } .pbar.anch { grid-column:1 / -1 !important; grid-row:auto !important; margin-top:0; border-top-left-radius:6px; } }
 @media (max-width:540px) {
   .wrap { padding:20px 14px 50px; }
   .grid { grid-template-columns:minmax(0,1fr); }
@@ -189,6 +202,7 @@ dialog::backdrop { background:rgba(15,21,29,.5); }
   <div class="filters" role="toolbar" aria-label="Tapis timeline">
     <div class="group" id="fAuth"><span class="lbl">Pihak berkuasa</span></div>
     <div class="group" id="fKind"><span class="lbl">Jenis video</span></div>
+    <div class="group"><button type="button" class="chip" id="addPeriod">+ Tempoh fine-tune</button></div>
   </div>
 
   <main id="weeks"></main>
@@ -218,7 +232,7 @@ dialog::backdrop { background:rgba(15,21,29,.5); }
     </ol>
   </details>
 
-  <p class="foot">Warna ikut sheet asal: merah jambu ialah Before, biru ialah After, kuning ialah fine-tune seminggu sebelum After, kelabu putus-putus ialah slot kosong. Sempadan oren = tertangguh, sempadan kelabu = dibatalkan. Sempadan dua garis merah = ada isu virtual loop/countdown timer (semak dalam kad). Klik kad untuk tanda Siap. Kotak kuning = nota pasukan. Guna "Edit jadual" untuk tukar tarikh, slot, jenis atau persimpangan secara langsung; perubahan dikongsi dengan pasukan dan boleh dikembalikan kepada jadual asal.</p>
+  <p class="foot">Warna ikut sheet asal: merah jambu ialah Before, biru ialah After, kuning ialah fine-tune seminggu sebelum After, kelabu putus-putus ialah slot kosong. Sempadan oren = tertangguh, sempadan kelabu = dibatalkan. Sempadan dua garis merah = ada isu virtual loop/countdown timer (semak dalam kad). Klik kad untuk tanda Siap. Kotak kuning = nota pasukan. Slot "Kosong" boleh diisi dengan "+ Tambah rancangan". Bar kuning melintang = tempoh fine-tune (guna "+ Tempoh fine-tune"). Guna "Edit jadual" untuk tukar tarikh, slot, jenis atau persimpangan secara langsung; perubahan dikongsi dengan pasukan dan boleh dikembalikan kepada jadual asal.</p>
 </div>
 
 <dialog id="noteDialog">
@@ -268,6 +282,7 @@ dialog::backdrop { background:rgba(15,21,29,.5); }
       </label>
       <label class="nd-field">Pihak berkuasa<select id="edAuth"></select></label>
     </div>
+    <label class="nd-field" id="edEndWrap">Hingga tarikh (pilihan: jadikan Fine-tune satu tempoh, bukan harian)<input type="date" id="edEnd"></label>
     <label class="nd-field">Persimpangan<input type="text" id="edJunc" required></label>
     <label class="nd-field">Fasa<input type="text" id="edPhase"></label>
     <label class="nd-field">Nota pada kad (pilihan)<input type="text" id="edCardNote"></label>
@@ -282,6 +297,26 @@ dialog::backdrop { background:rgba(15,21,29,.5); }
         <button type="button" class="nd-btn" id="edCancel">Batal</button>
         <button type="submit" class="nd-btn primary">Simpan</button>
       </div>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="periodDialog">
+  <form class="nd-inner" method="dialog" id="periodForm">
+    <h3 id="pdTitle">Tempoh fine-tune</h3>
+    <p class="nd-context">Satu tempoh untuk beberapa hari, tak perlu satu kad setiap hari.</p>
+    <div class="nd-row">
+      <label class="nd-field">Mula<input type="date" id="pdStart" min="2026-09-21" max="2026-11-08" required></label>
+      <label class="nd-field">Tamat<input type="date" id="pdEnd" min="2026-09-21" max="2026-11-08" required></label>
+    </div>
+    <label class="nd-field">Pihak berkuasa<select id="pdAuth"></select></label>
+    <label class="nd-field">Persimpangan<input type="text" id="pdJunc" required></label>
+    <label class="nd-field">Nota (akan dipaparkan dalam kotak kuning)<textarea id="pdNote"></textarea></label>
+    <label class="nd-field">Nama anda<input type="text" id="pdAuthor" placeholder="Nama anda" required></label>
+    <p class="nd-status" id="pdMsg" role="status" aria-live="polite"></p>
+    <div class="nd-actions">
+      <div class="left"><button type="button" class="nd-btn danger" id="pdDelete">Padam tempoh</button></div>
+      <div class="right"><button type="button" class="nd-btn" id="pdCancel">Batal</button><button type="submit" class="nd-btn primary">Simpan</button></div>
     </div>
   </form>
 </dialog>
@@ -338,7 +373,7 @@ function fmtAt(at){ return at ? new Date(at).toLocaleString("ms-MY", { day: "num
 
 var done = {};      // slot id -> 1 when finished (shared with the team)
 var notes = {};     // slot id -> [entries]; keys "edit:<id>" hold schedule edits (JSON in .note)
-var edits = {};     // slot id -> latest schedule override (or null)
+var edits = {}; var periods = {};     // slot id -> latest schedule override (or null)
 var pending = {};
 var filt = { auth: "all", kind: "all" };
 var SLOTMETA = {};
@@ -365,6 +400,8 @@ function syncNote(id, payload){
 
 // Schedule edits are stored as entries under id "edit:<slotId>" so they sync through the same Web App.
 function deriveEdits(){
+  periods = {};
+  Object.keys(notes).forEach(function(k){ if (k.indexOf("period:") !== 0) return; var h = notes[k]; var last = h && h.length ? h[h.length - 1] : null; if (!last) return; try { var o = JSON.parse(last.note); if (o && !o.del) { o.id = k.slice(7); o.by = last.author; o.at = last.at; periods[o.id] = o; } } catch (e) {} });
   edits = {};
   Object.keys(notes).forEach(function(k){
     if (k.indexOf("edit:") !== 0) return;
@@ -390,20 +427,20 @@ function buildEff(){
   });
   EFF = Object.keys(rows).sort().map(function(k){ return rows[k]; });
   EFF.forEach(function(row){
-    row[1].concat(row[2]).forEach(function(s, k){ if (s.t !== "free" && s._id) BYID[s._id] = { date: row[0], slot: s }; });
+    row[1].concat(row[2]).forEach(function(s, k){ if (s._id) BYID[s._id] = { date: row[0], slot: s }; });
   });
 }
-function prep(dateKey, s, k, moves, isMain){
-  var id = baseId(dateKey, s, k);
+function prep(dateKey, s, k, moves, isMain, forcedId){
+  var id = forcedId || baseId(dateKey, s, k);
   var c = {}; for (var p in s) c[p] = s[p];
   c._id = id;
-  var ov = s.t !== "free" ? edits[id] : null;
+  var ov = edits[id];
   if (!ov) return c;
   ["s","t","a","p","j","n"].forEach(function(f){ if (ov[f] !== undefined) c[f] = ov[f]; });
-  c.edited = { by: ov.by, at: ov.at, from: dateKey, fromS: s.s, reason: ov.reason };
-  if (ov.date && ov.date !== dateKey) {
-    moves.push({ date: ov.date, slot: c });
-    return isMain ? { s: s.s, t: "free", _id: id + "-free" } : null;
+  c.edited = { by: ov.by, at: ov.at, from: dateKey, fromS: s.s, reason: ov.reason, added: s.t === "free" };
+  if ((ov.date && ov.date !== dateKey) || ov.hidden) {
+    if (!ov.hidden) moves.push({ date: ov.date, slot: c });
+    return isMain ? prep(dateKey, { s: s.s, t: "free" }, k, moves, true, id + "-free") : null;
   }
   return c;
 }
@@ -434,7 +471,7 @@ function lastNoteEntry(history){
 function slotHTML(dateKey, s, idx){
   var id = idOf(dateKey, s, idx);
   var fullCls = s.s === "full" ? " full" : "";
-  if (s.t === "free") return '<div class="slot-card free' + fullCls + '"><div class="slot-toggle" style="cursor:default"><span class="slot-top"><span>' + WHEN[s.s] + '</span></span><span class="free-txt">Kosong</span></div></div>';
+  if (s.t === "free") return '<div class="slot-card free' + fullCls + '"><div class="slot-toggle" style="cursor:default"><span class="slot-top"><span>' + WHEN[s.s] + '</span></span><span class="free-txt">Kosong</span><button type="button" class="edit-btn free-add" data-id="' + id + '">+ Tambah rancangan</button></div></div>';
 
   var isDone = !!done[id];
   var history = notes[id] || [];
@@ -452,21 +489,21 @@ function slotHTML(dateKey, s, idx){
   if (shown || curStatus) {
     footer += '<div class="note-callout ' + curStatus + '">' +
       '<div class="nc-h"><span>📝 NOTA' + (curStatus ? ' · ' + STATUSLBL[curStatus].toUpperCase() : '') + '</span><span>' + esc((shown || nd).author || "?") + ' · ' + esc(fmtAt((shown || nd).at)) + '</span></div>' +
-      (shown ? '<div class="nc-b">' + esc(shown.note) + '</div>' : '') + '</div>';
+      (shown ? '<div class="nc-b" title="' + esc(shown.note) + '">' + esc(shown.note) + '</div>' : '') + '</div>';
   }
-  footer += '<div class="foot-btns"><button type="button" class="note-btn' + (history.length ? " has" : "") + '" data-id="' + id + '">' + (history.length ? "Lihat nota (" + history.length + ")" : "+ Tambah nota") + '</button>' +
-    '<button type="button" class="edit-btn" data-id="' + id + '">✎ Edit jadual</button></div></div>';
+  footer += '<div class="foot-btns"><button type="button" class="note-btn' + (history.length ? " has" : "") + '" data-id="' + id + '">' + (history.length ? "📝 Nota (" + history.length + ")" : "+ Nota") + '</button>' +
+    '<button type="button" class="edit-btn" data-id="' + id + '">✎ Edit</button></div></div>';
 
   var ed = s.edited;
-  var edTag = ed ? '<span class="edited-tag">✎ Disunting' + (ed.from !== dateKey ? ' (asal ' + fmt(parse(ed.from)) + ')' : '') + (ed.by ? ' oleh ' + esc(ed.by) : '') + '</span>' : '';
+  var edTag = ed ? '<span class="edited-tag">' + (ed.added ? "➕ Ditambah" : "✎ Disunting") + (ed.from !== dateKey ? ' (asal ' + fmt(parse(ed.from)) + ')' : '') + (ed.by ? ' oleh ' + esc(ed.by) : '') + '</span>' : '';
 
   return '<div class="slot-card ' + s.t + fullCls + (isDone ? " done" : "") + statusCls + conflictCls + '" data-id="' + id + '" data-auth="' + s.a + '" data-kind="' + s.t + '">' +
     '<button type="button" class="slot-toggle" data-id="' + id + '" aria-pressed="' + isDone + '" title="' + esc(AUTH[s.a] || s.a) + '">' +
     '<span class="slot-top"><span>' + WHEN[s.s] + '</span><span class="kind"><span class="tick">Siap </span>' + KINDLBL[s.t] + '</span></span>' +
     '<span class="junc">' + esc(s.j) + '</span><span class="meta">' + esc(s.a) + ', ' + esc(s.p) + '</span>' +
     (s.n ? '<span class="note">' + esc(s.n) + '</span>' : '') + (s.flag ? '<span class="flag">' + esc(s.flag) + '</span>' : '') + edTag +
-    (vlState === "issue" ? '<span class="conflict-tag">⚠ ' + esc(vlText) + '</span>' : '') +
-    (vlState === "resolved" ? '<span class="resolved-tag">✓ ' + esc(vlText) + '</span>' : '') +
+    (vlState === "issue" ? '<span class="conflict-tag" title="' + esc(vlText) + '">⚠ ' + esc(vlText) + '</span>' : '') +
+    (vlState === "resolved" ? '<span class="resolved-tag" title="' + esc(vlText) + '">✓ ' + esc(vlText) + '</span>' : '') +
     '</button>' + footer + '</div>';
 }
 
@@ -477,13 +514,13 @@ function render(){
   EFF.forEach(function(row){ var wk = mondayOf(parse(row[0])); if (!weeks[wk]) { weeks[wk] = []; order.push(wk); } weeks[wk].push(row); });
   var todayKey = keyOf(new Date()); var html = "";
   order.forEach(function(wk, i){
-    var rows = weeks[wk]; var first = parse(rows[0][0]), last = parse(rows[rows.length-1][0]);
-    html += '<section class="week"><h2>Minggu ' + (i+1) + ' <small>' + fmt(first) + ' – ' + fmt(last) + '</small></h2><div class="grid">';
-    rows.forEach(function(row){
+    var rows = weeks[wk]; var lay = layoutBars(wk, rows); var first = parse(rows[0][0]), last = parse(rows[rows.length-1][0]);
+    html += '<section class="week"><h2>Minggu ' + (i+1) + ' <small>' + fmt(first) + ' – ' + fmt(last) + '</small></h2>' + lay.above + '<div class="grid">';
+    rows.forEach(function(row, ri){
       var d = parse(row[0]); var isToday = row[0] === todayKey; var slots = row[1];
       html += '<div class="day' + (isToday ? " today" : "") + '" id="d-' + row[0] + '"><div class="day-h"><b>' + DAYN[d.getDay()] + '</b><span>' + (isToday ? '<span class="badge-today">Hari ini</span> ' : '') + fmt(d) + '</span></div>' +
         (slots.length ? '<div class="slots">' + slots.map(function(s, k){ return slotHTML(row[0], s, k); }).join("") + '</div>' : '') +
-        (row[2] && row[2].length ? '<div class="extras">' + row[2].map(function(s, k){ return slotHTML(row[0], s, k); }).join("") + '</div>' : '') + '</div>';
+        (row[2] && row[2].length ? '<div class="extras">' + row[2].map(function(s, k){ return slotHTML(row[0], s, k); }).join("") + '</div>' : '') + '</div>' + (lay.byRow[ri] || []).join("");
     });
     html += '</div></section>';
   });
@@ -539,7 +576,7 @@ function updateStats(){
 }
 
 function applyFilter(){
-  var nodes = document.querySelectorAll(".slot-card[data-auth]");
+  var nodes = document.querySelectorAll(".slot-card[data-auth], .pbar[data-auth]");
   for (var i = 0; i < nodes.length; i++) { var n = nodes[i]; var ok = (filt.auth === "all" || n.getAttribute("data-auth") === filt.auth) && (filt.kind === "all" || n.getAttribute("data-kind") === filt.kind); n.classList.toggle("dim", !ok); }
 }
 
@@ -584,7 +621,11 @@ document.getElementById("weeks").addEventListener("click", function(e){
   var noteBtn = e.target.closest ? e.target.closest(".note-btn[data-id]") : null;
   if (noteBtn) { openNoteDialog(noteBtn.getAttribute("data-id")); return; }
   var editBtn = e.target.closest ? e.target.closest(".edit-btn[data-id]") : null;
-  if (editBtn) openEditDialog(editBtn.getAttribute("data-id"));
+  if (editBtn) { openEditDialog(editBtn.getAttribute("data-id")); return; }
+  var pe = e.target.closest ? e.target.closest("[data-pedit]") : null;
+  if (pe) { openPeriodDialog(pe.getAttribute("data-pedit")); return; }
+  var pd = e.target.closest ? e.target.closest("[data-pdone]") : null;
+  if (pd) togglePeriodDone(pd.getAttribute("data-pdone"));
 });
 
 // --- Note dialog ---
@@ -677,16 +718,19 @@ function openEditDialog(id){
   var b = BYID[id]; if (!b) return;
   currentEditId = id;
   var s = b.slot;
-  $("edContext").textContent = "Asal: " + (SLOTMETA[id] || id) + ". Perubahan dikongsi dengan pasukan serta-merta.";
-  $("edDate").value = b.date; $("edSlot").value = s.s; $("edKind").value = s.t; $("edAuth").value = s.a;
-  $("edJunc").value = s.j; $("edPhase").value = s.p || ""; $("edCardNote").value = s.n || "";
-  $("edReason").value = ""; $("edAuthor").value = safeGet("noteAuthor");
+  var fr = s.t === "free";
+  $("edContext").textContent = fr ? "Slot kosong " + fmt(parse(b.date)) + " · " + WHEN[s.s] + ". Isi untuk tambah rancangan." : "Asal: " + (SLOTMETA[id] || id) + ". Perubahan dikongsi dengan pasukan serta-merta.";
+  $("edDate").value = b.date; $("edSlot").value = s.s; $("edKind").value = fr ? "before" : s.t; $("edAuth").value = fr ? Object.keys(AUTH)[0] : s.a;
+  $("edJunc").value = s.j || ""; $("edPhase").value = s.p || ""; $("edCardNote").value = s.n || "";
+  $("edReason").value = ""; $("edAuthor").value = safeGet("noteAuthor"); $("edEnd").value = ""; toggleEnd();
   $("edMsg").textContent = ""; $("edMsg").className = "nd-status";
   $("edReset").style.display = edits[id] ? "" : "none";
   if (typeof edDialog.showModal === "function") edDialog.showModal();
   else alert("Pelayar ini tidak menyokong pop timbul. Sila guna Chrome versi terkini.");
 }
 $("edCancel").addEventListener("click", function(){ edDialog.close(); });
+function toggleEnd(){ var b = BYID[currentEditId]; $("edEndWrap").style.display = ($("edKind").value === "tune" && b && b.slot.t !== "free") ? "" : "none"; }
+$("edKind").addEventListener("change", toggleEnd);
 
 function pushEdit(id, ov, reason, author, summary){
   var key = "edit:" + id;
@@ -717,6 +761,15 @@ $("editForm").addEventListener("submit", function(e){
   safeStore("noteAuthor", author);
   var s = b.slot;
   var ov = { date: $("edDate").value, s: $("edSlot").value, t: $("edKind").value, a: $("edAuth").value, p: $("edPhase").value.trim(), j: $("edJunc").value.trim(), n: $("edCardNote").value.trim(), reason: reason };
+  var endV = $("edEnd").value;
+  if (s.t === "free") { pushEdit(id, ov, reason, author, "➕ Rancangan ditambah: " + KINDLBL[ov.t] + ", " + ov.a + ", " + ov.j + " (" + WHEN[ov.s] + ")."); return; }
+  if (ov.t === "tune" && endV && endV > ov.date) {
+    var pid = "p" + Date.now().toString(36);
+    var pe = addPeriodLocal(pid, { start: ov.date, end: endV, a: ov.a, j: ov.j, n: ov.n || reason }, author);
+    if (isConfigured()) syncNote("period:" + pid, pe).catch(function(){ undoLocal("period:" + pid, pe); render(); setStatus("Gagal simpan tempoh fine-tune.", "err"); });
+    pushEdit(id, { hidden: true, reason: reason }, reason, author, "🔧 Ditukar kepada tempoh fine-tune " + fmt(parse(ov.date)) + " – " + fmt(parse(endV)) + ".");
+    return;
+  }
   var ch = [];
   if (ov.date !== b.date) ch.push("tarikh " + fmt(parse(b.date)) + " → " + fmt(parse(ov.date)));
   if (ov.s !== s.s) ch.push("masa " + WHEN[s.s] + " → " + WHEN[ov.s]);
@@ -733,6 +786,80 @@ $("edReset").addEventListener("click", function(){
   if (!author || !reason) { $("edMsg").textContent = "Isi nama dan sebab dahulu sebelum kembali ke asal."; $("edMsg").className = "nd-status err"; return; }
   safeStore("noteAuthor", author);
   pushEdit(id, { reset: true }, reason, author, "↺ Jadual dikembalikan ke asal.");
+});
+
+// --- Fine-tune periods ---
+function dayDiff(a, b){ return Math.round((parse(a) - parse(b)) / 864e5); }
+function barHTML(pid, p, c1, c2, lane, anchored, cont, more){
+  var isDone = !!done["period:" + pid];
+  return '<div class="pbar' + (anchored ? " anch" : "") + (isDone ? " done" : "") + '" data-auth="' + esc(p.a) + '" data-kind="tune" style="grid-column:' + c1 + ' / ' + c2 + (anchored ? ';grid-row:' + (2 + lane) : '') + '">' +
+    '<div class="pbar-h"><span>' + (cont ? "◀ " : "") + '🔧 FINE-TUNE · ' + fmt(parse(p.start)) + ' – ' + fmt(parse(p.end)) + (more ? " ▶" : "") + '</span><span>' + (isDone ? "✓ Siap · " : "") + esc(p.a) + '</span></div>' +
+    '<div class="pj">' + esc(p.j) + '</div>' +
+    (p.n ? '<div class="note-callout"><div class="nc-h"><span>📝 NOTA</span><span>' + esc(p.by || "?") + ' · ' + esc(fmtAt(p.at)) + '</span></div><div class="nc-b" title="' + esc(p.n) + '">' + esc(p.n) + '</div></div>' : '') +
+    '<div class="foot-btns"><button type="button" class="note-btn" data-pdone="' + pid + '">' + (isDone ? "Batal siap" : "Tanda siap") + '</button><button type="button" class="edit-btn" data-pedit="' + pid + '">✎ Edit tempoh</button></div></div>';
+}
+// Bars start directly under the day panel where the period begins and stretch across the following days.
+function layoutBars(wk, rows){
+  var anchored = rows.length <= 4, byRow = {}, above = "", laneEnd = [];
+  Object.keys(periods).sort(function(x, y){ return periods[x].start < periods[y].start ? -1 : 1; }).forEach(function(pid){
+    var p = periods[pid], a = -1, b = -1;
+    rows.forEach(function(r, i){ if (r[0] >= p.start && r[0] <= p.end) { if (a < 0) a = i; b = i; } });
+    if (a < 0) return;
+    var cont = p.start < rows[0][0], more = p.end > rows[rows.length - 1][0];
+    if (anchored) {
+      var lane = 0; while (laneEnd[lane] !== undefined && laneEnd[lane] >= a) lane++;
+      laneEnd[lane] = b;
+      (byRow[a] = byRow[a] || []).push(barHTML(pid, p, a + 1, b + 2, lane, true, cont, more));
+    } else above += barHTML(pid, p, Math.min(a, 3) + 1, Math.min(b, 3) + 2, 0, false, cont, more);
+  });
+  return { byRow: byRow, above: above ? '<div class="pbars">' + above + '</div>' : "" };
+}
+function addPeriodLocal(pid, o, author){
+  var key = "period:" + pid; var entry = { status: "none", note: JSON.stringify(o), author: author, at: new Date().toISOString(), vl: "default", vlNote: "" };
+  if (!notes[key]) notes[key] = []; notes[key].push(entry); return entry;
+}
+function undoLocal(key, entry){ var i = (notes[key] || []).indexOf(entry); if (i !== -1) notes[key].splice(i, 1); if (notes[key] && !notes[key].length) delete notes[key]; }
+function togglePeriodDone(pid){
+  var id = "period:" + pid, isDone = !done[id];
+  if (isDone) done[id] = 1; else delete done[id];
+  render();
+  if (!isConfigured()) { setStatus("Belum disambung ke Google Sheet. Perubahan tidak disimpan.", "err"); return; }
+  pending[id] = isDone; setStatus("Menyimpan...", "");
+  syncDone(id, isDone).then(function(){ if (pending[id] === isDone) delete pending[id]; setStatus("Disimpan dan dikongsi dengan pasukan pada " + timeNow(), "ok"); })
+  .catch(function(){ if (pending[id] !== isDone) return; delete pending[id]; if (isDone) delete done[id]; else done[id] = 1; render(); setStatus("Gagal simpan. Perubahan dibatalkan.", "err"); });
+}
+var pDialog = document.getElementById("periodDialog"); var currentPid = null;
+$("pdAuth").innerHTML = $("edAuth").innerHTML;
+function openPeriodDialog(pid){
+  currentPid = pid || null; var p = pid ? periods[pid] : null;
+  $("pdTitle").textContent = p ? "Edit tempoh fine-tune" : "Tambah tempoh fine-tune";
+  $("pdStart").value = p ? p.start : ""; $("pdEnd").value = p ? p.end : "";
+  $("pdAuth").value = p ? p.a : Object.keys(AUTH)[0]; $("pdJunc").value = p ? p.j : ""; $("pdNote").value = p ? (p.n || "") : "";
+  $("pdAuthor").value = safeGet("noteAuthor"); $("pdMsg").textContent = ""; $("pdMsg").className = "nd-status";
+  $("pdDelete").style.display = p ? "" : "none";
+  if (typeof pDialog.showModal === "function") pDialog.showModal(); else alert("Pelayar ini tidak menyokong pop timbul. Sila guna Chrome versi terkini.");
+}
+function savePeriod(pid, o, author){
+  var key = "period:" + pid; var entry = addPeriodLocal(pid, o, author); render();
+  if (!isConfigured()) { setStatus("Belum disambung ke Google Sheet. Perubahan tidak disimpan.", "err"); pDialog.close(); return; }
+  $("pdMsg").textContent = "Menyimpan..."; $("pdMsg").className = "nd-status";
+  syncNote(key, entry).then(function(){ setStatus("Tempoh fine-tune disimpan dan dikongsi pada " + timeNow(), "ok"); pDialog.close(); })
+  .catch(function(){ undoLocal(key, entry); render(); $("pdMsg").textContent = "Gagal simpan. Cuba lagi."; $("pdMsg").className = "nd-status err"; });
+}
+$("addPeriod").addEventListener("click", function(){ openPeriodDialog(null); });
+$("pdCancel").addEventListener("click", function(){ pDialog.close(); });
+$("periodForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  var author = $("pdAuthor").value.trim(), st = $("pdStart").value, en = $("pdEnd").value, j = $("pdJunc").value.trim();
+  if (!author || !st || !en || !j) { $("pdMsg").textContent = "Lengkapkan semua medan wajib."; $("pdMsg").className = "nd-status err"; return; }
+  if (en < st) { $("pdMsg").textContent = "Tarikh tamat mesti selepas tarikh mula."; $("pdMsg").className = "nd-status err"; return; }
+  safeStore("noteAuthor", author);
+  savePeriod(currentPid || ("p" + Date.now().toString(36)), { start: st, end: en, a: $("pdAuth").value, j: j, n: $("pdNote").value.trim() }, author);
+});
+$("pdDelete").addEventListener("click", function(){
+  var author = $("pdAuthor").value.trim() || safeGet("noteAuthor");
+  if (!author) { $("pdMsg").textContent = "Sila masukkan nama anda."; $("pdMsg").className = "nd-status err"; return; }
+  if (currentPid) savePeriod(currentPid, { del: true }, author);
 });
 
 render();

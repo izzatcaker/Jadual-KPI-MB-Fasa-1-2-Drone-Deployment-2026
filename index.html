@@ -590,11 +590,11 @@ function loadTeamData(){
       notes = remote.notes || {};
       Object.keys(pending).forEach(function(id){ if (pending[id]) done[id] = 1; else delete done[id]; });
       render();
-      setStatus("Disegerakkan dengan pasukan pada " + timeNow(), "ok");
+      setStatus("Synchronized " + timeNow(), "ok");
     })
     .catch(function(e){
       console.error("Failed to load team data", e);
-      setStatus("Tidak dapat sambung ke data pasukan. Semak akses Web App atau muat semula halaman.", "err");
+      setStatus("Tidak dapat sambung ke data pasukan. Semak akses atau refresh.", "err");
     });
 }
 

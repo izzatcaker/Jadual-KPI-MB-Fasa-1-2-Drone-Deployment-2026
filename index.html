@@ -59,6 +59,9 @@ header p.sync.err { color:var(--before-line); font-weight:600; }
 /* Notes feed */
 .feed { background:var(--note-bg); color:var(--note-ink); border:2px solid var(--note-line); border-radius:8px; padding:12px 14px; margin:6px 0 14px; }
 .feed[hidden] { display:none; }
+.feed-toggle { font:inherit; font-size:1.05rem; font-weight:700; color:inherit; background:none; border:none; padding:0; width:100%; display:flex; justify-content:space-between; gap:10px; cursor:pointer; text-align:left; }
+.feed-toggle span:last-child { font-size:.85rem; font-weight:600; }
+.feed-list { margin-top:10px; }
 .feed h2 { margin:0 0 8px; font-size:1.05rem; font-weight:700; }
 .feed-list { display:flex; flex-direction:column; gap:8px; }
 .feed-item { background:var(--surface); color:var(--ink); border:1px solid var(--line); border-left:5px solid var(--note-line); border-radius:5px; padding:8px 10px; display:flex; gap:10px; justify-content:space-between; align-items:flex-start; }
@@ -530,7 +533,7 @@ function render(){
   renderFeed();
 }
 
-var feedAll = false;
+var feedAll = false; // false = collapsed (default)
 function renderFeed(){
   var box = document.getElementById("feed"); var items = [];
   Object.keys(notes).forEach(function(id){
@@ -542,18 +545,18 @@ function renderFeed(){
   });
   items.sort(function(a, b){ return a.at < b.at ? 1 : -1; });
   if (!items.length) { box.hidden = true; box.innerHTML = ""; return; }
-  var list = feedAll ? items : items.slice(0, 4);
+  var list = feedAll ? items : [];
   box.hidden = false;
-  box.innerHTML = '<h2>📝 Nota &amp; perubahan terkini (' + items.length + ')</h2><div class="feed-list">' + list.map(function(it){
+  box.innerHTML = '<button type="button" class="feed-toggle" id="feedToggle" aria-expanded="' + feedAll + '"><span>📝 Nota &amp; perubahan terkini (' + items.length + ')</span><span>' + (feedAll ? 'Sembunyi ▲' : 'Tunjuk ▼') + '</span></button>' + (feedAll ? '<div class="feed-list">' : '<div hidden>') + list.map(function(it){
     var b = BYID[it.id];
     return '<div class="feed-item ' + it.st + '"><div><div class="fi-head">' + fmt(parse(b.date)) + ' · ' + WHEN[b.slot.s] + ' · ' + KINDLBL[b.slot.t] + ' · ' + esc(b.slot.j) + (it.st ? ' <span class="status-chip ' + it.st + '">' + STATUSLBL[it.st] + '</span>' : '') + '</div>' +
       (it.e.note ? '<div class="fi-note">' + esc(it.e.note) + '</div>' : '') +
       '<div class="fi-meta">' + esc(it.e.author || "?") + ' · ' + esc(fmtAt(it.e.at)) + '</div></div>' +
       '<button type="button" class="fi-go" data-go="' + it.id + '">Pergi ke kad</button></div>';
-  }).join("") + '</div>' + (items.length > 4 ? '<button type="button" class="feed-more" id="feedMore">' + (feedAll ? "Tunjuk lebih sedikit" : "Tunjuk semua " + items.length) + '</button>' : '');
+  }).join("") + '</div>';
 }
 document.getElementById("feed").addEventListener("click", function(e){
-  if (e.target.id === "feedMore") { feedAll = !feedAll; renderFeed(); return; }
+  if (e.target.closest && e.target.closest("#feedToggle")) { feedAll = !feedAll; renderFeed(); return; }
   var go = e.target.closest ? e.target.closest(".fi-go[data-go]") : null;
   if (!go) return;
   var card = document.querySelector('.slot-card[data-id="' + go.getAttribute("data-go") + '"]');

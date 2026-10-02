@@ -458,7 +458,7 @@ function slotHTML(dateKey, s, idx){
     '<button type="button" class="edit-btn" data-id="' + id + '">✎ Edit jadual</button></div></div>';
 
   var ed = s.edited;
-  var edTag = ed ? '<span class="edited-tag">✎ Diedit' + (ed.from !== dateKey ? ' (asal ' + fmt(parse(ed.from)) + ')' : '') + (ed.by ? ' oleh ' + esc(ed.by) : '') + '</span>' : '';
+  var edTag = ed ? '<span class="edited-tag">✎ Disunting' + (ed.from !== dateKey ? ' (asal ' + fmt(parse(ed.from)) + ')' : '') + (ed.by ? ' oleh ' + esc(ed.by) : '') + '</span>' : '';
 
   return '<div class="slot-card ' + s.t + fullCls + (isDone ? " done" : "") + statusCls + conflictCls + '" data-id="' + id + '" data-auth="' + s.a + '" data-kind="' + s.t + '">' +
     '<button type="button" class="slot-toggle" data-id="' + id + '" aria-pressed="' + isDone + '" title="' + esc(AUTH[s.a] || s.a) + '">' +

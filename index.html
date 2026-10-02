@@ -7,240 +7,171 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap">
 <style>
 :root {
-  --bg: #f4f6f9;
-  --surface: #ffffff;
-  --ink: #16202e;
-  --muted: #5f6b7c;
-  --line: #d9dfe8;
-  --navy: #1f4e79;
-  --navy-ink: #ffffff;
-  --before-bg: #f6dedf;
-  --before-line: #c05659;
-  --before-ink: #6a2124;
-  --after-bg: #d6ebf4;
-  --after-line: #3a8fb3;
-  --after-ink: #0e4560;
-  --free-bg: #eceef2;
-  --free-line: #c3cad5;
-  --done: #2f8a5b;
-  --tune-bg: #fbecc4;
-  --tune-line: #c38f14;
-  --tune-ink: #5a4000;
-  --delay-bg: #fde8cf;
-  --delay-line: #c97a12;
-  --delay-ink: #5a3a06;
-  --cancel-bg: #e6e7eb;
-  --cancel-line: #767c88;
-  --cancel-ink: #383c44;
-  --focus: #1f4e79;
-  box-sizing: border-box;
-  padding-top: env(safe-area-inset-top, 0px);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  --bg:#f4f6f9;--surface:#fff;--ink:#16202e;--muted:#5f6b7c;--line:#d9dfe8;--navy:#1f4e79;--navy-ink:#fff;
+  --before-bg:#f6dedf;--before-line:#c05659;--before-ink:#6a2124;
+  --after-bg:#d6ebf4;--after-line:#3a8fb3;--after-ink:#0e4560;
+  --free-bg:#eceef2;--free-line:#c3cad5;--done:#2f8a5b;
+  --tune-bg:#fbecc4;--tune-line:#c38f14;--tune-ink:#5a4000;
+  --delay-bg:#fde8cf;--delay-line:#c97a12;--delay-ink:#5a3a06;
+  --cancel-bg:#e6e7eb;--cancel-line:#767c88;--cancel-ink:#383c44;
+  --note-bg:#fff6b8;--note-line:#e0a800;--note-ink:#3d2e00;
+  --focus:#1f4e79;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0f151d;
-    --surface: #17202b;
-    --ink: #e7ecf3;
-    --muted: #97a3b4;
-    --line: #2a3644;
-    --navy: #6fa6d8;
-    --navy-ink: #0f151d;
-    --before-bg: #3b2326;
-    --before-line: #d27679;
-    --before-ink: #f3c9cb;
-    --after-bg: #172f3b;
-    --after-line: #5fb0d2;
-    --after-ink: #bfe3f2;
-    --free-bg: #1c2632;
-    --free-line: #38465a;
-    --done: #58c08a;
-    --tune-bg: #3a2f14;
-    --tune-line: #d9ab3b;
-    --tune-ink: #f3dfa5;
-    --delay-bg: #3a2a12;
-    --delay-line: #dd9a3f;
-    --delay-ink: #f3d3a0;
-    --cancel-bg: #262b33;
-    --cancel-line: #8891a0;
-    --cancel-ink: #c7ccd6;
-    --focus: #6fa6d8;
+    --bg:#0f151d;--surface:#17202b;--ink:#e7ecf3;--muted:#97a3b4;--line:#2a3644;--navy:#6fa6d8;--navy-ink:#0f151d;
+    --before-bg:#3b2326;--before-line:#d27679;--before-ink:#f3c9cb;
+    --after-bg:#172f3b;--after-line:#5fb0d2;--after-ink:#bfe3f2;
+    --free-bg:#1c2632;--free-line:#38465a;--done:#58c08a;
+    --tune-bg:#3a2f14;--tune-line:#d9ab3b;--tune-ink:#f3dfa5;
+    --delay-bg:#3a2a12;--delay-line:#dd9a3f;--delay-ink:#f3d3a0;
+    --cancel-bg:#262b33;--cancel-line:#8891a0;--cancel-ink:#c7ccd6;
+    --note-bg:#4a3d0c;--note-line:#f0c030;--note-ink:#fff1b0;--focus:#6fa6d8;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0f151d;
-  --surface: #17202b;
-  --ink: #e7ecf3;
-  --muted: #97a3b4;
-  --line: #2a3644;
-  --navy: #6fa6d8;
-  --navy-ink: #0f151d;
-  --before-bg: #3b2326;
-  --before-line: #d27679;
-  --before-ink: #f3c9cb;
-  --after-bg: #172f3b;
-  --after-line: #5fb0d2;
-  --after-ink: #bfe3f2;
-  --free-bg: #1c2632;
-  --free-line: #38465a;
-  --done: #58c08a;
-  --tune-bg: #3a2f14;
-  --tune-line: #d9ab3b;
-  --tune-ink: #f3dfa5;
-  --delay-bg: #3a2a12;
-  --delay-line: #dd9a3f;
-  --delay-ink: #f3d3a0;
-  --cancel-bg: #262b33;
-  --cancel-line: #8891a0;
-  --cancel-ink: #c7ccd6;
-  --focus: #6fa6d8;
+  --bg:#0f151d;--surface:#17202b;--ink:#e7ecf3;--muted:#97a3b4;--line:#2a3644;--navy:#6fa6d8;--navy-ink:#0f151d;
+  --before-bg:#3b2326;--before-line:#d27679;--before-ink:#f3c9cb;
+  --after-bg:#172f3b;--after-line:#5fb0d2;--after-ink:#bfe3f2;
+  --free-bg:#1c2632;--free-line:#38465a;--done:#58c08a;
+  --tune-bg:#3a2f14;--tune-line:#d9ab3b;--tune-ink:#f3dfa5;
+  --delay-bg:#3a2a12;--delay-line:#dd9a3f;--delay-ink:#f3d3a0;
+  --cancel-bg:#262b33;--cancel-line:#8891a0;--cancel-ink:#c7ccd6;
+  --note-bg:#4a3d0c;--note-line:#f0c030;--note-ink:#fff1b0;--focus:#6fa6d8;
 }
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-padding-top: env(safe-area-inset-top, 0px); height: 100%; }
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--ink);
-  font-family: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  font-size: 15px;
-  line-height: 1.45;
+body { margin:0; background:var(--bg); color:var(--ink); font-family:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; font-size:15px; line-height:1.45; }
+.wrap { max-width:1180px; margin:0 auto; padding:28px 20px 60px; }
+header h1 { margin:0 0 4px; font-size:clamp(1.5rem,2.6vw,2.1rem); font-weight:700; letter-spacing:-0.01em; }
+header p { margin:0; color:var(--muted); }
+header p.sync { margin-top:4px; font-size:.85rem; min-height:1.3em; }
+header p.sync.ok { color:var(--done); }
+header p.sync.err { color:var(--before-line); font-weight:600; }
+.stats { display:flex; flex-wrap:wrap; gap:28px; margin:22px 0 14px; align-items:flex-end; }
+.stat b { display:block; font-size:1.9rem; font-weight:700; line-height:1.05; }
+.stat span { color:var(--muted); font-size:.85rem; }
+.progress { flex:1 1 260px; min-width:220px; }
+.bar { height:8px; background:var(--free-bg); border-radius:4px; overflow:hidden; margin-top:6px; }
+.bar i { display:block; height:100%; width:0; background:var(--done); transition:width .25s ease; }
+
+/* Notes feed */
+.feed { background:var(--note-bg); color:var(--note-ink); border:2px solid var(--note-line); border-radius:8px; padding:12px 14px; margin:6px 0 14px; }
+.feed[hidden] { display:none; }
+.feed h2 { margin:0 0 8px; font-size:1.05rem; font-weight:700; }
+.feed-list { display:flex; flex-direction:column; gap:8px; }
+.feed-item { background:var(--surface); color:var(--ink); border:1px solid var(--line); border-left:5px solid var(--note-line); border-radius:5px; padding:8px 10px; display:flex; gap:10px; justify-content:space-between; align-items:flex-start; }
+.feed-item.delayed { border-left-color:var(--delay-line); }
+.feed-item.cancelled { border-left-color:var(--cancel-line); }
+.fi-head { font-weight:700; font-size:.9rem; }
+.fi-note { font-size:.95rem; margin-top:2px; overflow-wrap:anywhere; }
+.fi-meta { font-size:.78rem; color:var(--muted); margin-top:2px; }
+.fi-go { font:inherit; font-size:.8rem; font-weight:600; border:1px solid var(--navy); color:var(--navy); background:transparent; border-radius:999px; padding:3px 10px; cursor:pointer; white-space:nowrap; }
+.feed-more { font:inherit; font-size:.85rem; font-weight:600; background:none; border:none; color:inherit; text-decoration:underline; cursor:pointer; margin-top:8px; padding:0; }
+
+.filters { position:sticky; top:env(safe-area-inset-top,0px); z-index:5; background:var(--bg); padding:10px 0; margin-bottom:8px; border-bottom:1px solid var(--line); display:flex; flex-wrap:wrap; gap:8px 22px; align-items:center; }
+.group { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+.group .lbl { color:var(--muted); font-size:.85rem; margin-right:2px; }
+.chip { font:inherit; font-size:.85rem; font-weight:500; border:1px solid var(--line); background:var(--surface); color:var(--ink); padding:4px 11px; border-radius:999px; cursor:pointer; }
+.chip[aria-pressed="true"] { background:var(--navy); border-color:var(--navy); color:var(--navy-ink); }
+.chip:focus-visible,.slot-toggle:focus-visible,.note-btn:focus-visible,.edit-btn:focus-visible,.fi-go:focus-visible,summary:focus-visible { outline:2px solid var(--focus); outline-offset:2px; }
+
+.week { margin-top:26px; }
+.week h2 { margin:0 0 10px; font-size:1.05rem; font-weight:600; display:flex; flex-wrap:wrap; gap:4px 12px; align-items:baseline; }
+.week h2 small { font-weight:400; color:var(--muted); font-size:.9rem; }
+.grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+.day { background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:10px; display:flex; flex-direction:column; gap:8px; min-height:250px; }
+.day.today { border-color:var(--navy); box-shadow:0 0 0 2px var(--navy); }
+.day-h { display:flex; justify-content:space-between; align-items:baseline; }
+.day-h b { font-weight:600; }
+.day-h span { color:var(--muted); font-size:.88rem; }
+.badge-today { background:var(--navy); color:var(--navy-ink); font-size:.75rem; font-weight:600; padding:1px 8px; border-radius:999px; }
+.slots { flex:1; display:grid; grid-template-rows:1fr 1fr; gap:6px; }
+.slot-card.full { grid-row:span 2; }
+
+.slot-card { border:1px solid; border-left-width:4px; border-radius:4px; display:flex; flex-direction:column; overflow:hidden; scroll-margin-top:90px; }
+.slot-card.before { background:var(--before-bg); border-color:var(--before-line); color:var(--before-ink); }
+.slot-card.after { background:var(--after-bg); border-color:var(--after-line); color:var(--after-ink); }
+.slot-card.tune { background:var(--tune-bg); border-color:var(--tune-line); color:var(--tune-ink); }
+.slot-card.card-delayed { border-color:var(--delay-line); box-shadow:inset 0 0 0 1px var(--delay-line); }
+.slot-card.card-cancelled { border-color:var(--cancel-line); box-shadow:inset 0 0 0 1px var(--cancel-line); }
+.slot-card.dim { opacity:.22; }
+.slot-card.done { background-image:repeating-linear-gradient(135deg,transparent 0 7px,rgba(47,138,91,.10) 7px 8px); }
+.slot-card.done .junc { text-decoration:line-through; text-decoration-thickness:2px; }
+.slot-card.done .tick { display:inline; }
+.slot-card.flash { animation:flash 1.6s ease 1; }
+@keyframes flash { 0%,60% { outline:3px solid var(--note-line); outline-offset:2px; } 100% { outline:3px solid transparent; } }
+.extras { display:flex; flex-direction:column; gap:6px; }
+.slot-card.free { background:var(--free-bg); border:1px dashed var(--free-line); color:var(--muted); padding:8px 10px; }
+.slot-toggle { text-align:left; font:inherit; color:inherit; background:none; border:none; padding:8px 10px 6px; display:flex; flex-direction:column; gap:3px; cursor:pointer; width:100%; flex:1; }
+.slot-top { display:flex; justify-content:space-between; gap:6px; font-size:.8rem; font-weight:600; }
+.junc { font-weight:700; font-size:.98rem; line-height:1.3; overflow-wrap:anywhere; }
+.meta { font-size:.82rem; opacity:.88; }
+.note { font-size:.8rem; font-style:italic; opacity:.92; }
+.flag { font-size:.78rem; font-weight:600; border-top:1px dashed currentColor; padding-top:3px; margin-top:2px; }
+.free-txt { font-size:.85rem; }
+.tick { display:none; font-weight:700; color:var(--done); }
+.status-chip { font-size:.76rem; font-weight:700; padding:1px 7px; border-radius:999px; display:inline-block; width:fit-content; }
+.status-chip.delayed { background:var(--delay-line); color:#fff; }
+.status-chip.cancelled { background:var(--cancel-line); color:#fff; }
+.slot-card.card-conflict { box-shadow:inset 0 0 0 2px var(--before-line); }
+.conflict-tag { display:inline-block; font-size:.76rem; font-weight:700; color:var(--before-ink); background:var(--before-bg); border:1px solid var(--before-line); border-radius:3px; padding:0 5px; margin-top:3px; }
+.resolved-tag { display:inline-block; font-size:.76rem; font-weight:700; color:#1e5b3a; background:#d5edda; border:1px solid #4c9c6d; border-radius:3px; padding:0 5px; margin-top:3px; }
+.edited-tag { display:inline-block; font-size:.76rem; font-weight:700; color:#fff; background:var(--navy); color:var(--navy-ink); border-radius:3px; padding:0 6px; margin-top:3px; }
+
+/* Card footer: prominent note */
+.slot-footer { border-top:1px dashed currentColor; padding:6px 8px 8px; display:flex; flex-direction:column; gap:6px; }
+.note-callout { background:var(--note-bg); color:var(--note-ink); border:2px solid var(--note-line); border-radius:5px; padding:6px 8px; }
+.note-callout.delayed { border-color:var(--delay-line); }
+.note-callout.cancelled { border-color:var(--cancel-line); }
+.nc-h { display:flex; justify-content:space-between; gap:6px; font-size:.76rem; font-weight:700; flex-wrap:wrap; }
+.nc-b { font-size:.9rem; font-weight:600; margin-top:2px; overflow-wrap:anywhere; white-space:pre-wrap; }
+.foot-btns { display:flex; gap:6px; flex-wrap:wrap; }
+.note-btn,.edit-btn { font:inherit; font-size:.78rem; font-weight:600; color:inherit; background:rgba(255,255,255,.35); border:1px solid currentColor; border-radius:999px; padding:2px 10px; cursor:pointer; }
+.note-btn.has { background:var(--note-bg); color:var(--note-ink); border-color:var(--note-line); border-width:2px; }
+
+details.check { margin-top:36px; background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:12px 16px; }
+details.check summary { cursor:pointer; font-weight:600; }
+details.check ol { margin:10px 0 0; padding-left:20px; }
+details.check li { margin-bottom:8px; max-width:78ch; }
+
+dialog { border:none; border-radius:8px; padding:0; max-width:440px; width:calc(100% - 32px); color:var(--ink); background:var(--surface); }
+dialog::backdrop { background:rgba(15,21,29,.5); }
+.nd-history { max-height:160px; overflow-y:auto; border:1px solid var(--line); border-radius:5px; padding:8px; display:flex; flex-direction:column; gap:8px; font-size:.8rem; background:var(--bg); }
+.nd-history-empty { color:var(--muted); font-style:italic; margin:0; }
+.nd-history-entry { padding-bottom:6px; border-bottom:1px dashed var(--line); }
+.nd-history-entry:last-child { border-bottom:none; padding-bottom:0; }
+.nd-history-meta { font-weight:600; display:flex; justify-content:space-between; gap:8px; }
+.nd-history-tags { margin:3px 0; display:flex; gap:6px; flex-wrap:wrap; }
+.nd-history-vl { opacity:.85; }
+.nd-inner { padding:18px 20px 20px; display:flex; flex-direction:column; gap:12px; max-height:90vh; overflow-y:auto; }
+.nd-inner h3 { margin:0; font-size:1.05rem; }
+.nd-context { font-size:.85rem; color:var(--muted); margin:-6px 0 2px; }
+.nd-field { display:flex; flex-direction:column; gap:4px; font-size:.85rem; }
+.nd-field select,.nd-field textarea,.nd-field input { font:inherit; padding:7px 9px; border:1px solid var(--line); border-radius:5px; background:var(--bg); color:var(--ink); width:100%; }
+.nd-field textarea { resize:vertical; min-height:64px; }
+.nd-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.nd-actions { display:flex; justify-content:space-between; gap:8px; margin-top:4px; flex-wrap:wrap; }
+.nd-actions .left,.nd-actions .right { display:flex; gap:8px; }
+.nd-btn { font:inherit; font-size:.85rem; font-weight:600; padding:7px 14px; border-radius:5px; cursor:pointer; border:1px solid var(--line); background:var(--surface); color:var(--ink); }
+.nd-btn.primary { background:var(--navy); border-color:var(--navy); color:var(--navy-ink); }
+.nd-btn.danger { background:transparent; border-color:var(--before-line); color:var(--before-line); }
+.nd-status { font-size:.8rem; min-height:1.1em; }
+.nd-status.err { color:var(--before-line); }
+.foot { margin-top:16px; color:var(--muted); font-size:.82rem; }
+
+@media (max-width:900px) { .grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:540px) {
+  .wrap { padding:20px 14px 50px; }
+  .grid { grid-template-columns:minmax(0,1fr); }
+  .day { min-height:0; }
+  .slots { grid-template-rows:none; }
+  .slot-card.full { grid-row:auto; }
+  .feed-item { flex-direction:column; }
+  .nd-row { grid-template-columns:1fr; }
 }
-.wrap { max-width: 1180px; margin: 0 auto; padding: 28px 20px 60px; }
-
-header h1 { margin: 0 0 4px; font-size: clamp(1.5rem, 2.6vw, 2.1rem); font-weight: 700; letter-spacing: -0.01em; }
-header p { margin: 0; color: var(--muted); }
-header p.sync { margin-top: 4px; font-size: 0.85rem; min-height: 1.3em; }
-header p.sync.ok { color: var(--done); }
-header p.sync.err { color: var(--before-line); font-weight: 600; }
-
-.stats { display: flex; flex-wrap: wrap; gap: 28px; margin: 22px 0 14px; align-items: flex-end; }
-.stat b { display: block; font-size: 1.9rem; font-weight: 700; line-height: 1.05; }
-.stat span { color: var(--muted); font-size: 0.85rem; }
-.progress { flex: 1 1 260px; min-width: 220px; }
-.bar { height: 8px; background: var(--free-bg); border-radius: 4px; overflow: hidden; margin-top: 6px; }
-.bar i { display: block; height: 100%; width: 0; background: var(--done); transition: width .25s ease; }
-
-.filters {
-  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
-  background: var(--bg); padding: 10px 0; margin-bottom: 8px;
-  border-bottom: 1px solid var(--line);
-  display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: center;
-}
-.group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-.group .lbl { color: var(--muted); font-size: 0.85rem; margin-right: 2px; }
-.chip {
-  font: inherit; font-size: 0.85rem; font-weight: 500;
-  border: 1px solid var(--line); background: var(--surface); color: var(--ink);
-  padding: 4px 11px; border-radius: 999px; cursor: pointer;
-}
-.chip[aria-pressed="true"] { background: var(--navy); border-color: var(--navy); color: var(--navy-ink); }
-.chip:focus-visible, .slot-toggle:focus-visible, .note-btn:focus-visible, summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-
-.week { margin-top: 26px; }
-.week h2 { margin: 0 0 10px; font-size: 1.05rem; font-weight: 600; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
-.week h2 small { font-weight: 400; color: var(--muted); font-size: 0.9rem; }
-.grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
-
-.day { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 8px; min-height: 250px; }
-.day.today { border-color: var(--navy); box-shadow: 0 0 0 2px var(--navy); }
-.day-h { display: flex; justify-content: space-between; align-items: baseline; }
-.day-h b { font-weight: 600; }
-.day-h span { color: var(--muted); font-size: 0.88rem; }
-.badge-today { background: var(--navy); color: var(--navy-ink); font-size: 0.75rem; font-weight: 600; padding: 1px 8px; border-radius: 999px; }
-.slots { flex: 1; display: grid; grid-template-rows: 1fr 1fr; gap: 6px; }
-.slot-card.full { grid-row: span 2; }
-
-/* card = colored container; slot-toggle = the click-to-mark-done button inside it */
-.slot-card {
-  border: 1px solid; border-left-width: 4px; border-radius: 4px;
-  display: flex; flex-direction: column; overflow: hidden;
-}
-.slot-card.before { background: var(--before-bg); border-color: var(--before-line); color: var(--before-ink); }
-.slot-card.after { background: var(--after-bg); border-color: var(--after-line); color: var(--after-ink); }
-.slot-card.tune { background: var(--tune-bg); border-color: var(--tune-line); color: var(--tune-ink); }
-.slot-card.card-delayed { border-color: var(--delay-line); box-shadow: inset 0 0 0 1px var(--delay-line); }
-.slot-card.card-cancelled { border-color: var(--cancel-line); box-shadow: inset 0 0 0 1px var(--cancel-line); }
-.slot-card.dim { opacity: 0.22; }
-.slot-card.done { background-image: repeating-linear-gradient(135deg, transparent 0 7px, rgba(47,138,91,.10) 7px 8px); }
-.slot-card.done .junc { text-decoration: line-through; text-decoration-thickness: 2px; }
-.slot-card.done .tick { display: inline; }
-
-.extras { display: flex; flex-direction: column; gap: 6px; }
-.slot-card.free { background: var(--free-bg); border: 1px dashed var(--free-line); color: var(--muted); padding: 8px 10px; }
-
-.slot-toggle {
-  text-align: left; font: inherit; color: inherit; background: none; border: none;
-  padding: 8px 10px 6px; display: flex; flex-direction: column; gap: 3px;
-  cursor: pointer; width: 100%; flex: 1;
-}
-.slot-top { display: flex; justify-content: space-between; gap: 6px; font-size: 0.8rem; font-weight: 600; }
-.slot-top .kind { font-weight: 600; }
-.junc { font-weight: 700; font-size: 0.98rem; line-height: 1.3; overflow-wrap: anywhere; }
-.meta { font-size: 0.82rem; opacity: 0.88; }
-.note { font-size: 0.8rem; font-style: italic; opacity: 0.92; }
-.flag { font-size: 0.78rem; font-weight: 600; border-top: 1px dashed currentColor; padding-top: 3px; margin-top: 2px; }
-.free-txt { font-size: 0.85rem; }
-.tick { display: none; font-weight: 700; color: var(--done); }
-
-.status-chip { font-size: 0.76rem; font-weight: 700; padding: 1px 7px; border-radius: 999px; display: inline-block; width: fit-content; margin-top: 2px; }
-.status-chip.delayed { background: var(--delay-line); color: #fff; }
-.status-chip.cancelled { background: var(--cancel-line); color: #fff; }
-
-.slot-card.card-conflict { box-shadow: inset 0 0 0 2px var(--before-line); }
-.conflict-tag { display: inline-block; font-size: 0.76rem; font-weight: 700; color: var(--before-ink); background: var(--before-bg); border: 1px solid var(--before-line); border-radius: 3px; padding: 0 5px; margin-top: 3px; }
-.resolved-tag { display: inline-block; font-size: 0.76rem; font-weight: 700; color: #1e5b3a; background: #d5edda; border: 1px solid #4c9c6d; border-radius: 3px; padding: 0 5px; margin-top: 3px; }
-
-details.check { margin-top: 36px; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 12px 16px; }
-details.check summary { cursor: pointer; font-weight: 600; }
-details.check ol { margin: 10px 0 0; padding-left: 20px; }
-details.check li { margin-bottom: 8px; max-width: 78ch; }
-
-.slot-footer { border-top: 1px dashed currentColor; opacity: 0.95; padding: 6px 10px 8px; display: flex; flex-direction: column; gap: 3px; }
-.note-btn {
-  font: inherit; font-size: 0.78rem; font-weight: 600; color: inherit;
-  background: rgba(255,255,255,0.35); border: 1px solid currentColor; border-radius: 999px;
-  padding: 2px 10px; cursor: pointer; align-self: flex-start;
-}
-.note-preview { font-size: 0.78rem; opacity: 0.85; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
-.note-author { font-weight: 600; }
-
-dialog#noteDialog { border: none; border-radius: 8px; padding: 0; max-width: 420px; width: calc(100% - 32px); color: var(--ink); background: var(--surface); }
-dialog#noteDialog::backdrop { background: rgba(15, 21, 29, 0.5); }
-.nd-history { max-height: 160px; overflow-y: auto; border: 1px solid var(--line); border-radius: 5px; padding: 8px; display: flex; flex-direction: column; gap: 8px; font-size: 0.8rem; background: var(--bg); }
-.nd-history-empty { color: var(--muted); font-style: italic; margin: 0; }
-.nd-history-entry { padding-bottom: 6px; border-bottom: 1px dashed var(--line); }
-.nd-history-entry:last-child { border-bottom: none; padding-bottom: 0; }
-.nd-history-meta { font-weight: 600; display: flex; justify-content: space-between; gap: 8px; }
-.nd-history-tags { margin: 3px 0; display: flex; gap: 6px; flex-wrap: wrap; }
-.nd-history-vl { opacity: 0.85; }
-.nd-inner { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 12px; }
-.nd-inner h3 { margin: 0; font-size: 1.05rem; }
-.nd-context { font-size: 0.85rem; color: var(--muted); margin: -6px 0 2px; }
-.nd-field { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; }
-.nd-field select, .nd-field textarea, .nd-field input {
-  font: inherit; padding: 7px 9px; border: 1px solid var(--line); border-radius: 5px;
-  background: var(--bg); color: var(--ink); width: 100%;
-}
-.nd-field textarea { resize: vertical; min-height: 64px; }
-.nd-actions { display: flex; justify-content: space-between; gap: 8px; margin-top: 4px; }
-.nd-actions .left, .nd-actions .right { display: flex; gap: 8px; }
-.nd-btn { font: inherit; font-size: 0.85rem; font-weight: 600; padding: 7px 14px; border-radius: 5px; cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
-.nd-btn.primary { background: var(--navy); border-color: var(--navy); color: var(--navy-ink); }
-.nd-btn.danger { background: transparent; border-color: var(--before-line); color: var(--before-line); }
-.nd-status { font-size: 0.8rem; min-height: 1.1em; }
-.nd-status.err { color: var(--before-line); }
-
-.foot { margin-top: 16px; color: var(--muted); font-size: 0.82rem; }
-
-@media (max-width: 900px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 540px) {
-  .wrap { padding: 20px 14px 50px; }
-  .grid { grid-template-columns: minmax(0, 1fr); }
-  .day { min-height: 0; }
-  .slots { grid-template-rows: none; }
-  .slot-card.full { grid-row: auto; }
-}
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+@media (prefers-reduced-motion: reduce) { * { transition:none !important; animation:none !important; } }
 </style>
 </head>
 <body>
@@ -251,9 +182,9 @@ dialog#noteDialog::backdrop { background: rgba(15, 21, 29, 0.5); }
     <p class="sync" id="sync" role="status" aria-live="polite"></p>
   </header>
 
-  <div class="stats" id="stats">
-    <p>Loading team progress...</p>
-  </div>
+  <div class="stats" id="stats"><p>Loading team progress...</p></div>
+
+  <section class="feed" id="feed" hidden aria-label="Nota terkini"></section>
 
   <div class="filters" role="toolbar" aria-label="Tapis timeline">
     <div class="group" id="fAuth"><span class="lbl">Pihak berkuasa</span></div>
@@ -287,18 +218,15 @@ dialog#noteDialog::backdrop { background: rgba(15, 21, 29, 0.5); }
     </ol>
   </details>
 
-  <p class="foot">Warna ikut sheet asal: merah jambu ialah Before, biru ialah After, kuning ialah fine-tune seminggu sebelum After, kelabu putus-putus ialah slot kosong. Sempadan oren = tertangguh, sempadan kelabu = dibatalkan. Sempadan dua garis merah = ada isu virtual loop/countdown timer (semak dalam kad). Klik kad untuk tanda Siap; guna butang Nota untuk catat sebab tertangguh/dibatalkan.</p>
+  <p class="foot">Warna ikut sheet asal: merah jambu ialah Before, biru ialah After, kuning ialah fine-tune seminggu sebelum After, kelabu putus-putus ialah slot kosong. Sempadan oren = tertangguh, sempadan kelabu = dibatalkan. Sempadan dua garis merah = ada isu virtual loop/countdown timer (semak dalam kad). Klik kad untuk tanda Siap. Kotak kuning = nota pasukan. Guna "Edit jadual" untuk tukar tarikh, slot, jenis atau persimpangan secara langsung; perubahan dikongsi dengan pasukan dan boleh dikembalikan kepada jadual asal.</p>
 </div>
 
 <dialog id="noteDialog">
   <form class="nd-inner" method="dialog" id="noteForm">
     <h3>Nota slot</h3>
     <p class="nd-context" id="ndContext"></p>
-    <div class="nd-field">
-      <span>Sejarah nota</span>
-      <div class="nd-history" id="ndHistory"></div>
-    </div>
-    <hr style="width:100%; border: none; border-top: 1px solid var(--line); margin: 2px 0;">
+    <div class="nd-field"><span>Sejarah nota</span><div class="nd-history" id="ndHistory"></div></div>
+    <hr style="width:100%; border:none; border-top:1px solid var(--line); margin:2px 0;">
     <p class="nd-context" style="margin:0;">Tambah nota baru</p>
     <label class="nd-field">Status
       <select id="ndStatus">
@@ -315,12 +243,44 @@ dialog#noteDialog::backdrop { background: rgba(15, 21, 29, 0.5); }
     </label>
     <p class="nd-status" id="ndStatusMsg" role="status" aria-live="polite"></p>
     <div class="nd-actions">
-      <div class="left">
-        <button type="button" class="nd-btn danger" id="ndDelete">Kosongkan status semasa</button>
-      </div>
+      <div class="left"><button type="button" class="nd-btn danger" id="ndDelete">Kosongkan status semasa</button></div>
       <div class="right">
         <button type="button" class="nd-btn" id="ndCancel">Batal</button>
         <button type="submit" class="nd-btn primary" id="ndSave">Simpan</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="editDialog">
+  <form class="nd-inner" method="dialog" id="editForm">
+    <h3>Edit jadual</h3>
+    <p class="nd-context" id="edContext"></p>
+    <div class="nd-row">
+      <label class="nd-field">Tarikh<input type="date" id="edDate" required></label>
+      <label class="nd-field">Masa
+        <select id="edSlot"><option value="am">AM</option><option value="pm">PM</option><option value="full">AM/PM</option><option value="x">Tambahan</option></select>
+      </label>
+    </div>
+    <div class="nd-row">
+      <label class="nd-field">Jenis video
+        <select id="edKind"><option value="before">Before</option><option value="after">After</option><option value="tune">Fine-tune</option></select>
+      </label>
+      <label class="nd-field">Pihak berkuasa<select id="edAuth"></select></label>
+    </div>
+    <label class="nd-field">Persimpangan<input type="text" id="edJunc" required></label>
+    <label class="nd-field">Fasa<input type="text" id="edPhase"></label>
+    <label class="nd-field">Nota pada kad (pilihan)<input type="text" id="edCardNote"></label>
+    <label class="nd-field">Sebab perubahan (akan jadi nota kuning)
+      <textarea id="edReason" placeholder="Cth: Kru tak cukup, anjak ke Selasa" required></textarea>
+    </label>
+    <label class="nd-field">Nama anda<input type="text" id="edAuthor" placeholder="Nama anda" required></label>
+    <p class="nd-status" id="edMsg" role="status" aria-live="polite"></p>
+    <div class="nd-actions">
+      <div class="left"><button type="button" class="nd-btn danger" id="edReset">Kembali ke asal</button></div>
+      <div class="right">
+        <button type="button" class="nd-btn" id="edCancel">Batal</button>
+        <button type="submit" class="nd-btn primary">Simpan</button>
       </div>
     </div>
   </form>
@@ -372,44 +332,82 @@ function parse(k){ var p = k.split("-"); return new Date(+p[0], +p[1]-1, +p[2]);
 function fmt(d){ return d.getDate() + " " + MON[d.getMonth()]; }
 function keyOf(d){ var m = d.getMonth()+1, dd = d.getDate(); return d.getFullYear()+"-"+(m<10?"0":"")+m+"-"+(dd<10?"0":"")+dd; }
 function mondayOf(d){ var x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); var w = (x.getDay()+6)%7; x.setDate(x.getDate()-w); return keyOf(x); }
-function idOf(dateKey, s, idx){ return dateKey + "-" + s.s + (s.s === "x" ? idx : ""); }
+function baseId(dateKey, s, idx){ return dateKey + "-" + s.s + (s.s === "x" ? idx : ""); }
+function idOf(dateKey, s, idx){ return s._id || baseId(dateKey, s, idx); }
+function fmtAt(at){ return at ? new Date(at).toLocaleString("ms-MY", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : ""; }
 
 var done = {};      // slot id -> 1 when finished (shared with the team)
-var notes = {};     // slot id -> {status, note, author, at}
-var pending = {};   // slot id -> true/false, for done-toggle changes still being saved
+var notes = {};     // slot id -> [entries]; keys "edit:<id>" hold schedule edits (JSON in .note)
+var edits = {};     // slot id -> latest schedule override (or null)
+var pending = {};
 var filt = { auth: "all", kind: "all" };
-var SLOTMETA = {};  // slot id -> short label, used by the note dialog
+var SLOTMETA = {};
+var EFF = [];       // effective schedule = DATA + live edits
+var BYID = {};      // slot id -> {date, slot}
 
 function isConfigured(){ return typeof WEB_APP_URL === "string" && WEB_APP_URL.indexOf("https://script.google.com/") === 0; }
-
-function setStatus(text, kind){
-  var el = document.getElementById("sync");
-  el.textContent = text;
-  el.className = "sync" + (kind ? " " + kind : "");
-}
+function setStatus(text, kind){ var el = document.getElementById("sync"); el.textContent = text; el.className = "sync" + (kind ? " " + kind : ""); }
 function timeNow(){ return new Date().toLocaleTimeString("ms-MY", { hour: "2-digit", minute: "2-digit" }); }
 
-// Save one done/not-done change to the Google Sheet
 function syncDone(id, isDone){
   return fetch(WEB_APP_URL + "?action=set&id=" + encodeURIComponent(id) + "&done=" + isDone)
     .then(function(r){ return r.json(); })
     .then(function(j){ if (!j || !j.ok) throw new Error("Unexpected response from Web App"); });
 }
-
-// Save a note/status change to the Google Sheet
 function syncNote(id, payload){
   var qs = "?action=note&id=" + encodeURIComponent(id) +
-    "&status=" + encodeURIComponent(payload.status) +
-    "&note=" + encodeURIComponent(payload.note) +
-    "&author=" + encodeURIComponent(payload.author) +
-    "&vl=" + encodeURIComponent(payload.vl) +
-    "&vlNote=" + encodeURIComponent(payload.vlNote);
+    "&status=" + encodeURIComponent(payload.status) + "&note=" + encodeURIComponent(payload.note) +
+    "&author=" + encodeURIComponent(payload.author) + "&vl=" + encodeURIComponent(payload.vl) + "&vlNote=" + encodeURIComponent(payload.vlNote);
   return fetch(WEB_APP_URL + qs)
     .then(function(r){ return r.json(); })
     .then(function(j){ if (!j || !j.ok) throw new Error("Unexpected response from Web App"); });
 }
 
-// Load everyone's progress + notes from the Google Sheet
+// Schedule edits are stored as entries under id "edit:<slotId>" so they sync through the same Web App.
+function deriveEdits(){
+  edits = {};
+  Object.keys(notes).forEach(function(k){
+    if (k.indexOf("edit:") !== 0) return;
+    var h = notes[k]; var last = h && h.length ? h[h.length - 1] : null;
+    if (!last) return;
+    try { var o = JSON.parse(last.note); if (o && !o.reset) { o.by = last.author; o.at = last.at; edits[k.slice(5)] = o; } } catch (e) {}
+  });
+}
+
+// Build the effective schedule: apply overrides, move slots between days.
+function buildEff(){
+  var rows = {}, moves = [];
+  BYID = {};
+  DATA.forEach(function(row){
+    var main = [], extra = [];
+    (row[1] || []).forEach(function(s, k){ main.push(prep(row[0], s, k, moves, true)); });
+    (row[2] || []).forEach(function(s, k){ var r = prep(row[0], s, k, moves, false); if (r) extra.push(r); });
+    rows[row[0]] = [row[0], main.filter(Boolean), extra];
+  });
+  moves.forEach(function(m){
+    if (!rows[m.date]) rows[m.date] = [m.date, [], []];
+    rows[m.date][2].push(m.slot);
+  });
+  EFF = Object.keys(rows).sort().map(function(k){ return rows[k]; });
+  EFF.forEach(function(row){
+    row[1].concat(row[2]).forEach(function(s, k){ if (s.t !== "free" && s._id) BYID[s._id] = { date: row[0], slot: s }; });
+  });
+}
+function prep(dateKey, s, k, moves, isMain){
+  var id = baseId(dateKey, s, k);
+  var c = {}; for (var p in s) c[p] = s[p];
+  c._id = id;
+  var ov = s.t !== "free" ? edits[id] : null;
+  if (!ov) return c;
+  ["s","t","a","p","j","n"].forEach(function(f){ if (ov[f] !== undefined) c[f] = ov[f]; });
+  c.edited = { by: ov.by, at: ov.at, from: dateKey, fromS: s.s, reason: ov.reason };
+  if (ov.date && ov.date !== dateKey) {
+    moves.push({ date: ov.date, slot: c });
+    return isMain ? { s: s.s, t: "free", _id: id + "-free" } : null;
+  }
+  return c;
+}
+
 function loadTeamData(){
   if (!isConfigured()) { setStatus("Belum disambung ke Google Sheet. Perubahan tidak disimpan.", "err"); return Promise.resolve(); }
   return fetch(WEB_APP_URL + "?action=get&t=" + Date.now())
@@ -428,6 +426,11 @@ function loadTeamData(){
     });
 }
 
+function lastNoteEntry(history){
+  for (var i = history.length - 1; i >= 0; i--) if (history[i].note) return history[i];
+  return null;
+}
+
 function slotHTML(dateKey, s, idx){
   var id = idOf(dateKey, s, idx);
   var fullCls = s.s === "full" ? " full" : "";
@@ -435,52 +438,94 @@ function slotHTML(dateKey, s, idx){
 
   var isDone = !!done[id];
   var history = notes[id] || [];
-  var nd = history.length ? history[history.length - 1] : null; // latest entry drives the card's current status
+  var nd = history.length ? history[history.length - 1] : null;
+  var shown = lastNoteEntry(history);
   var statusCls = nd && nd.status === "delayed" ? " card-delayed" : nd && nd.status === "cancelled" ? " card-cancelled" : "";
   SLOTMETA[id] = fmt(parse(dateKey)) + " · " + WHEN[s.s] + " · " + KINDLBL[s.t] + " · " + s.j;
 
-  // Virtual loop / countdown timer status: team's latest saved entry wins, else fall back to the schedule's own tag.
   var vlState = nd && nd.vl && nd.vl !== "default" ? nd.vl : (s.conflict ? "issue" : s.resolved ? "resolved" : "none");
   var vlText = nd && nd.vl && nd.vl !== "default" ? (nd.vlNote || "") : (s.conflict || s.resolved || "");
   var conflictCls = (vlState === "issue" || vlState === "resolved") ? " card-conflict" : "";
 
-  var footer = '<div class="slot-footer">' +
-    '<button type="button" class="note-btn" data-id="' + id + '">' + (history.length ? "Lihat nota (" + history.length + ")" : "+ Tambah nota") + '</button>';
-  if (nd && nd.status && nd.status !== "none") footer += '<span class="status-chip ' + nd.status + '">' + STATUSLBL[nd.status] + '</span>';
-  if (nd && nd.note) footer += '<span class="note-preview" title="' + esc(nd.note) + '"><span class="note-author">' + esc(nd.author || "?") + ':</span> ' + esc(nd.note) + '</span>';
-  footer += '</div>';
+  var curStatus = nd && nd.status && nd.status !== "none" ? nd.status : "";
+  var footer = '<div class="slot-footer">';
+  if (shown || curStatus) {
+    footer += '<div class="note-callout ' + curStatus + '">' +
+      '<div class="nc-h"><span>📝 NOTA' + (curStatus ? ' · ' + STATUSLBL[curStatus].toUpperCase() : '') + '</span><span>' + esc((shown || nd).author || "?") + ' · ' + esc(fmtAt((shown || nd).at)) + '</span></div>' +
+      (shown ? '<div class="nc-b">' + esc(shown.note) + '</div>' : '') + '</div>';
+  }
+  footer += '<div class="foot-btns"><button type="button" class="note-btn' + (history.length ? " has" : "") + '" data-id="' + id + '">' + (history.length ? "Lihat nota (" + history.length + ")" : "+ Tambah nota") + '</button>' +
+    '<button type="button" class="edit-btn" data-id="' + id + '">✎ Edit jadual</button></div></div>';
+
+  var ed = s.edited;
+  var edTag = ed ? '<span class="edited-tag">✎ Diedit' + (ed.from !== dateKey ? ' (asal ' + fmt(parse(ed.from)) + ')' : '') + (ed.by ? ' oleh ' + esc(ed.by) : '') + '</span>' : '';
 
   return '<div class="slot-card ' + s.t + fullCls + (isDone ? " done" : "") + statusCls + conflictCls + '" data-id="' + id + '" data-auth="' + s.a + '" data-kind="' + s.t + '">' +
-    '<button type="button" class="slot-toggle" data-id="' + id + '" aria-pressed="' + isDone + '" title="' + esc(AUTH[s.a]) + '">' +
+    '<button type="button" class="slot-toggle" data-id="' + id + '" aria-pressed="' + isDone + '" title="' + esc(AUTH[s.a] || s.a) + '">' +
     '<span class="slot-top"><span>' + WHEN[s.s] + '</span><span class="kind"><span class="tick">Siap </span>' + KINDLBL[s.t] + '</span></span>' +
     '<span class="junc">' + esc(s.j) + '</span><span class="meta">' + esc(s.a) + ', ' + esc(s.p) + '</span>' +
-    (s.n ? '<span class="note">' + esc(s.n) + '</span>' : '') + (s.flag ? '<span class="flag">' + esc(s.flag) + '</span>' : '') +
+    (s.n ? '<span class="note">' + esc(s.n) + '</span>' : '') + (s.flag ? '<span class="flag">' + esc(s.flag) + '</span>' : '') + edTag +
     (vlState === "issue" ? '<span class="conflict-tag">⚠ ' + esc(vlText) + '</span>' : '') +
     (vlState === "resolved" ? '<span class="resolved-tag">✓ ' + esc(vlText) + '</span>' : '') +
     '</button>' + footer + '</div>';
 }
 
 function render(){
+  deriveEdits();
+  buildEff();
   var weeks = {}, order = [];
-  DATA.forEach(function(row){ var wk = mondayOf(parse(row[0])); if (!weeks[wk]) { weeks[wk] = []; order.push(wk); } weeks[wk].push(row); });
+  EFF.forEach(function(row){ var wk = mondayOf(parse(row[0])); if (!weeks[wk]) { weeks[wk] = []; order.push(wk); } weeks[wk].push(row); });
   var todayKey = keyOf(new Date()); var html = "";
   order.forEach(function(wk, i){
     var rows = weeks[wk]; var first = parse(rows[0][0]), last = parse(rows[rows.length-1][0]);
     html += '<section class="week"><h2>Minggu ' + (i+1) + ' <small>' + fmt(first) + ' – ' + fmt(last) + '</small></h2><div class="grid">';
     rows.forEach(function(row){
       var d = parse(row[0]); var isToday = row[0] === todayKey; var slots = row[1];
-      html += '<div class="day' + (isToday ? " today" : "") + '" id="d-' + row[0] + '"><div class="day-h"><b>' + DAYN[d.getDay()] + '</b><span>' + (isToday ? '<span class="badge-today">Hari ini</span> ' : '') + fmt(d) + '</span></div><div class="slots">' + slots.map(function(s, k){ return slotHTML(row[0], s, k); }).join("") + '</div>' + (row[2] ? '<div class="extras">' + row[2].map(function(s, k){ return slotHTML(row[0], s, k); }).join("") + '</div>' : '') + '</div>';
+      html += '<div class="day' + (isToday ? " today" : "") + '" id="d-' + row[0] + '"><div class="day-h"><b>' + DAYN[d.getDay()] + '</b><span>' + (isToday ? '<span class="badge-today">Hari ini</span> ' : '') + fmt(d) + '</span></div>' +
+        (slots.length ? '<div class="slots">' + slots.map(function(s, k){ return slotHTML(row[0], s, k); }).join("") + '</div>' : '') +
+        (row[2] && row[2].length ? '<div class="extras">' + row[2].map(function(s, k){ return slotHTML(row[0], s, k); }).join("") + '</div>' : '') + '</div>';
     });
     html += '</div></section>';
   });
   document.getElementById("weeks").innerHTML = html;
   applyFilter();
   updateStats();
+  renderFeed();
 }
+
+var feedAll = false;
+function renderFeed(){
+  var box = document.getElementById("feed"); var items = [];
+  Object.keys(notes).forEach(function(id){
+    if (id.indexOf("edit:") === 0 || !BYID[id]) return;
+    var h = notes[id]; var last = h[h.length - 1]; var shown = lastNoteEntry(h);
+    var st = last && last.status && last.status !== "none" ? last.status : "";
+    if (!shown && !st) return;
+    items.push({ id: id, st: st, e: shown || last, at: (shown || last).at || "" });
+  });
+  items.sort(function(a, b){ return a.at < b.at ? 1 : -1; });
+  if (!items.length) { box.hidden = true; box.innerHTML = ""; return; }
+  var list = feedAll ? items : items.slice(0, 4);
+  box.hidden = false;
+  box.innerHTML = '<h2>📝 Nota &amp; perubahan terkini (' + items.length + ')</h2><div class="feed-list">' + list.map(function(it){
+    var b = BYID[it.id];
+    return '<div class="feed-item ' + it.st + '"><div><div class="fi-head">' + fmt(parse(b.date)) + ' · ' + WHEN[b.slot.s] + ' · ' + KINDLBL[b.slot.t] + ' · ' + esc(b.slot.j) + (it.st ? ' <span class="status-chip ' + it.st + '">' + STATUSLBL[it.st] + '</span>' : '') + '</div>' +
+      (it.e.note ? '<div class="fi-note">' + esc(it.e.note) + '</div>' : '') +
+      '<div class="fi-meta">' + esc(it.e.author || "?") + ' · ' + esc(fmtAt(it.e.at)) + '</div></div>' +
+      '<button type="button" class="fi-go" data-go="' + it.id + '">Pergi ke kad</button></div>';
+  }).join("") + '</div>' + (items.length > 4 ? '<button type="button" class="feed-more" id="feedMore">' + (feedAll ? "Tunjuk lebih sedikit" : "Tunjuk semua " + items.length) + '</button>' : '');
+}
+document.getElementById("feed").addEventListener("click", function(e){
+  if (e.target.id === "feedMore") { feedAll = !feedAll; renderFeed(); return; }
+  var go = e.target.closest ? e.target.closest(".fi-go[data-go]") : null;
+  if (!go) return;
+  var card = document.querySelector('.slot-card[data-id="' + go.getAttribute("data-go") + '"]');
+  if (card) { card.scrollIntoView({ behavior: "smooth", block: "center" }); card.classList.remove("flash"); void card.offsetWidth; card.classList.add("flash"); }
+});
 
 function allSlots(){
   var out = [];
-  DATA.forEach(function(row){ row[1].forEach(function(s, k){ if (s.t !== "free") out.push({id: idOf(row[0], s, k), t: s.t, date: row[0]}); }); (row[2] || []).forEach(function(s, k){ out.push({id: idOf(row[0], s, k), t: s.t, date: row[0]}); }); });
+  EFF.forEach(function(row){ row[1].concat(row[2] || []).forEach(function(s, k){ if (s.t !== "free") out.push({id: s._id, t: s.t, date: row[0]}); }); });
   return out;
 }
 
@@ -507,11 +552,9 @@ function buildChips(containerId, key, items){
     box.appendChild(b);
   });
 }
-
 buildChips("fAuth", "auth", [{value:"all",label:"Semua"}].concat(Object.keys(AUTH).map(function(k){ return {value:k,label:k,title:AUTH[k]}; })));
 buildChips("fKind", "kind", [{value:"all",label:"Semua"},{value:"before",label:"Before"},{value:"after",label:"After"},{value:"tune",label:"Fine-tune"}]);
 
-// Toggle "Siap" when the main part of a card is clicked
 document.getElementById("weeks").addEventListener("click", function(e){
   var toggle = e.target.closest ? e.target.closest(".slot-toggle[data-id]") : null;
   if (toggle) {
@@ -519,13 +562,10 @@ document.getElementById("weeks").addEventListener("click", function(e){
     var card = toggle.closest(".slot-card");
     var isDone = !done[id];
     if (isDone) done[id] = 1; else delete done[id];
-
     card.classList.toggle("done", isDone);
     toggle.setAttribute("aria-pressed", String(isDone));
     updateStats();
-
     if (!isConfigured()) { setStatus("Belum disambung ke Google Sheet. Perubahan tidak disimpan.", "err"); return; }
-
     pending[id] = isDone;
     setStatus("Menyimpan...", "");
     syncDone(id, isDone).then(function(){
@@ -542,7 +582,9 @@ document.getElementById("weeks").addEventListener("click", function(e){
     return;
   }
   var noteBtn = e.target.closest ? e.target.closest(".note-btn[data-id]") : null;
-  if (noteBtn) openNoteDialog(noteBtn.getAttribute("data-id"));
+  if (noteBtn) { openNoteDialog(noteBtn.getAttribute("data-id")); return; }
+  var editBtn = e.target.closest ? e.target.closest(".edit-btn[data-id]") : null;
+  if (editBtn) openEditDialog(editBtn.getAttribute("data-id"));
 });
 
 // --- Note dialog ---
@@ -558,20 +600,19 @@ var currentNoteId = null;
 function renderHistory(history){
   var box = document.getElementById("ndHistory");
   if (!history.length) { box.innerHTML = '<p class="nd-history-empty">Belum ada nota.</p>'; return; }
-  var html = history.slice().reverse().map(function(entry){
-    var when = entry.at ? new Date(entry.at).toLocaleString("ms-MY", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "";
+  box.innerHTML = history.slice().reverse().map(function(entry){
     var tags = "";
     if (entry.status && entry.status !== "none") tags += '<span class="status-chip ' + entry.status + '">' + STATUSLBL[entry.status] + '</span>';
     if (entry.vl && entry.vl !== "default" && entry.vl !== "none") tags += '<span class="' + (entry.vl === "issue" ? "conflict-tag" : "resolved-tag") + '">' + (entry.vl === "issue" ? "⚠" : "✓") + ' VL/CD</span>';
-    return '<div class="nd-history-entry">' +
-      '<div class="nd-history-meta"><span>' + esc(entry.author || "?") + '</span><span>' + esc(when) + '</span></div>' +
+    return '<div class="nd-history-entry"><div class="nd-history-meta"><span>' + esc(entry.author || "?") + '</span><span>' + esc(fmtAt(entry.at)) + '</span></div>' +
       (tags ? '<div class="nd-history-tags">' + tags + '</div>' : "") +
       (entry.note ? '<div>' + esc(entry.note) + '</div>' : "") +
-      (entry.vlNote ? '<div class="nd-history-vl"><i>VL/CD:</i> ' + esc(entry.vlNote) + '</div>' : "") +
-      '</div>';
+      (entry.vlNote ? '<div class="nd-history-vl"><i>VL/CD:</i> ' + esc(entry.vlNote) + '</div>' : "") + '</div>';
   }).join("");
-  box.innerHTML = html;
 }
+
+function safeStore(k, v){ try { localStorage.setItem(k, v); } catch (e) {} }
+function safeGet(k){ try { return localStorage.getItem(k) || ""; } catch (e) { return ""; } }
 
 function openNoteDialog(id){
   currentNoteId = id;
@@ -580,33 +621,27 @@ function openNoteDialog(id){
   ndContext.textContent = SLOTMETA[id] || id;
   renderHistory(history);
   ndStatus.value = (latest && latest.status) || "none";
-  ndNote.value = ""; // a fresh entry, not an edit of the last one
-  ndAuthor.value = localStorage.getItem("noteAuthor") || "";
-  ndStatusMsg.textContent = "";
-  ndStatusMsg.className = "nd-status";
+  ndNote.value = "";
+  ndAuthor.value = safeGet("noteAuthor");
+  ndStatusMsg.textContent = ""; ndStatusMsg.className = "nd-status";
   ndDelete.style.display = history.length ? "" : "none";
   if (typeof dialog.showModal === "function") dialog.showModal();
   else alert("Pelayar ini tidak menyokong pop timbul nota. Sila guna Chrome versi terkini.");
 }
-
 document.getElementById("ndCancel").addEventListener("click", function(){ dialog.close(); });
-
 document.getElementById("noteForm").addEventListener("submit", function(e){
   e.preventDefault();
   if (!currentNoteId) return;
-  var id = currentNoteId;
   var author = ndAuthor.value.trim();
   if (!author) { ndStatusMsg.textContent = "Sila masukkan nama anda."; ndStatusMsg.className = "nd-status err"; return; }
-  localStorage.setItem("noteAuthor", author);
-  var payload = { status: ndStatus.value, note: ndNote.value.trim(), author: author, vl: "default", vlNote: "" };
-  saveNote(id, payload);
+  safeStore("noteAuthor", author);
+  saveNote(currentNoteId, { status: ndStatus.value, note: ndNote.value.trim(), author: author, vl: "default", vlNote: "" });
 });
-
 ndDelete.addEventListener("click", function(){
   if (!currentNoteId) return;
-  var author = ndAuthor.value.trim() || localStorage.getItem("noteAuthor") || "";
+  var author = ndAuthor.value.trim() || safeGet("noteAuthor");
   if (!author) { ndStatusMsg.textContent = "Sila masukkan nama anda."; ndStatusMsg.className = "nd-status err"; return; }
-  localStorage.setItem("noteAuthor", author);
+  safeStore("noteAuthor", author);
   saveNote(currentNoteId, { status: "none", note: "", author: author, vl: "default", vlNote: "" });
 });
 
@@ -616,11 +651,8 @@ function saveNote(id, payload){
   var entry = { status: payload.status, note: payload.note, author: payload.author, at: new Date().toISOString(), vl: payload.vl, vlNote: payload.vlNote };
   notes[id].push(entry);
   render();
-
   if (!isConfigured()) { setStatus("Belum disambung ke Google Sheet. Perubahan tidak disimpan.", "err"); dialog.close(); return; }
-
-  ndStatusMsg.textContent = "Menyimpan...";
-  ndStatusMsg.className = "nd-status";
+  ndStatusMsg.textContent = "Menyimpan..."; ndStatusMsg.className = "nd-status";
   syncNote(id, payload).then(function(){
     setStatus("Nota disimpan dan dikongsi dengan pasukan pada " + timeNow(), "ok");
     dialog.close();
@@ -635,11 +667,76 @@ function saveNote(id, payload){
   });
 }
 
-// Initial render, then load the team's saved progress
+// --- Edit schedule dialog ---
+var edDialog = document.getElementById("editDialog");
+var $ = function(i){ return document.getElementById(i); };
+var currentEditId = null;
+$("edAuth").innerHTML = Object.keys(AUTH).map(function(k){ return '<option value="' + k + '">' + k + ' – ' + AUTH[k] + '</option>'; }).join("");
+
+function openEditDialog(id){
+  var b = BYID[id]; if (!b) return;
+  currentEditId = id;
+  var s = b.slot;
+  $("edContext").textContent = "Asal: " + (SLOTMETA[id] || id) + ". Perubahan dikongsi dengan pasukan serta-merta.";
+  $("edDate").value = b.date; $("edSlot").value = s.s; $("edKind").value = s.t; $("edAuth").value = s.a;
+  $("edJunc").value = s.j; $("edPhase").value = s.p || ""; $("edCardNote").value = s.n || "";
+  $("edReason").value = ""; $("edAuthor").value = safeGet("noteAuthor");
+  $("edMsg").textContent = ""; $("edMsg").className = "nd-status";
+  $("edReset").style.display = edits[id] ? "" : "none";
+  if (typeof edDialog.showModal === "function") edDialog.showModal();
+  else alert("Pelayar ini tidak menyokong pop timbul. Sila guna Chrome versi terkini.");
+}
+$("edCancel").addEventListener("click", function(){ edDialog.close(); });
+
+function pushEdit(id, ov, reason, author, summary){
+  var key = "edit:" + id;
+  var ts = new Date().toISOString();
+  var editEntry = { status: "none", note: JSON.stringify(ov), author: author, at: ts, vl: "default", vlNote: "" };
+  var noteEntry = { status: "none", note: summary + (reason ? " Sebab: " + reason : ""), author: author, at: ts, vl: "default", vlNote: "" };
+  if (!notes[key]) notes[key] = []; if (!notes[id]) notes[id] = [];
+  notes[key].push(editEntry); notes[id].push(noteEntry);
+  render();
+  if (!isConfigured()) { setStatus("Belum disambung ke Google Sheet. Perubahan tidak disimpan.", "err"); edDialog.close(); return; }
+  $("edMsg").textContent = "Menyimpan..."; $("edMsg").className = "nd-status";
+  syncNote(key, editEntry).then(function(){ return syncNote(id, noteEntry); }).then(function(){
+    setStatus("Jadual dikemas kini dan dikongsi dengan pasukan pada " + timeNow(), "ok");
+    edDialog.close();
+  }).catch(function(err){
+    console.error("Failed to save edit", err);
+    [[key, editEntry], [id, noteEntry]].forEach(function(p){ var i = notes[p[0]].indexOf(p[1]); if (i !== -1) notes[p[0]].splice(i, 1); if (!notes[p[0]].length) delete notes[p[0]]; });
+    render();
+    $("edMsg").textContent = "Gagal simpan perubahan. Cuba lagi."; $("edMsg").className = "nd-status err";
+  });
+}
+
+$("editForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  var id = currentEditId; var b = BYID[id]; if (!id || !b) return;
+  var author = $("edAuthor").value.trim(), reason = $("edReason").value.trim();
+  if (!author || !reason) { $("edMsg").textContent = "Sila isi nama dan sebab perubahan."; $("edMsg").className = "nd-status err"; return; }
+  safeStore("noteAuthor", author);
+  var s = b.slot;
+  var ov = { date: $("edDate").value, s: $("edSlot").value, t: $("edKind").value, a: $("edAuth").value, p: $("edPhase").value.trim(), j: $("edJunc").value.trim(), n: $("edCardNote").value.trim(), reason: reason };
+  var ch = [];
+  if (ov.date !== b.date) ch.push("tarikh " + fmt(parse(b.date)) + " → " + fmt(parse(ov.date)));
+  if (ov.s !== s.s) ch.push("masa " + WHEN[s.s] + " → " + WHEN[ov.s]);
+  if (ov.t !== s.t) ch.push("jenis " + KINDLBL[s.t] + " → " + KINDLBL[ov.t]);
+  if (ov.a !== s.a) ch.push("pihak berkuasa " + s.a + " → " + ov.a);
+  if (ov.j !== s.j) ch.push("persimpangan " + s.j + " → " + ov.j);
+  if (ov.p !== (s.p || "")) ch.push("fasa → " + ov.p);
+  if (ov.n !== (s.n || "")) ch.push("nota kad diubah");
+  pushEdit(id, ov, reason, author, "✎ Jadual diubah: " + (ch.length ? ch.join("; ") + "." : "tiada perubahan medan."));
+});
+$("edReset").addEventListener("click", function(){
+  var id = currentEditId; if (!id) return;
+  var author = $("edAuthor").value.trim(), reason = $("edReason").value.trim();
+  if (!author || !reason) { $("edMsg").textContent = "Isi nama dan sebab dahulu sebelum kembali ke asal."; $("edMsg").className = "nd-status err"; return; }
+  safeStore("noteAuthor", author);
+  pushEdit(id, { reset: true }, reason, author, "↺ Jadual dikembalikan ke asal.");
+});
+
 render();
 loadTeamData();
-
-// Keep the page live: refresh while the tab is visible and when you switch back to it
 setInterval(function(){ if (!document.hidden) loadTeamData(); }, POLL_MS);
 document.addEventListener("visibilitychange", function(){ if (!document.hidden) loadTeamData(); });
 </script>

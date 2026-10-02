@@ -460,7 +460,7 @@ dialog { border-radius:22px; }
 // Google Apps Script Web App URL (saves progress + notes to your Google Sheet)
 const WEB_APP_URL = "https://script.google.com/a/macros/southmax.com.my/s/AKfycbxuEODr5uvcGS8GKcfi1O4dCE_GNki4SN8ackIxzxRmOqzAMEUsC9-YDyOuI48E4z4/exec";
 // How often (ms) to pull other people's changes while the page is open
-const POLL_MS = 4000;
+const POLL_MS = 6000;
 
 var AUTH = { MBJB: "Majlis Bandaraya Johor Bahru", MBPG: "Majlis Bandaraya Pasir Gudang", MBIP: "Majlis Bandaraya Iskandar Puteri", MPKu: "Majlis Perbandaran Kulai" };
 var PK = "Phase 1+2 (combined)";
@@ -510,6 +510,7 @@ var done = {};      // slot id -> 1 when finished (shared with the team)
 var notes = {};     // slot id -> [entries]; keys "edit:<id>" hold schedule edits (JSON in .note)
 var edits = {}; var periods = {};     // slot id -> latest schedule override (or null)
 var pending = {};
+var inflight = 0, failCount = 0, lastSig = "", loading = false; // sync state
 var filt = { auth: "all", kind: "all" };
 var SLOTMETA = {};
 var EFF = [];       // effective schedule = DATA + live edits
@@ -532,6 +533,10 @@ function syncNote(id, payload){
     .then(function(r){ return r.json(); })
     .then(function(j){ if (!j || !j.ok) throw new Error("Unexpected response from Web App"); });
 }
+
+// Count saves in flight so a refresh never overwrites something still being saved.
+function track(p){ inflight++; return p.then(function(v){ inflight--; return v; }, function(e){ inflight--; throw e; }); }
+(function(){ var sd = syncDone, sn = syncNote; syncDone = function(){ return track(sd.apply(null, arguments)); }; syncNote = function(){ return track(sn.apply(null, arguments)); }; })();
 
 // Schedule edits are stored as entries under id "edit:<slotId>" so they sync through the same Web App.
 function deriveEdits(){
@@ -582,20 +587,30 @@ function prep(dateKey, s, k, moves, isMain, forcedId){
 
 function loadTeamData(){
   if (!isConfigured()) { setStatus("Belum disambung ke Google Sheet. Perubahan tidak disimpan.", "err"); return Promise.resolve(); }
-  return fetch(WEB_APP_URL + "?action=get&t=" + Date.now())
+  if (loading) return Promise.resolve();
+  loading = true;
+  var ctl = typeof AbortController === "function" ? new AbortController() : null;
+  var to = ctl ? setTimeout(function(){ ctl.abort(); }, 15000) : null;
+  return fetch(WEB_APP_URL + "?action=get&t=" + Date.now(), ctl ? { signal: ctl.signal } : undefined)
     .then(function(r){ return r.json(); })
     .then(function(remote){
       if (!remote || typeof remote !== "object" || Array.isArray(remote)) throw new Error("Unexpected data from Web App");
+      failCount = 0;
+      if (inflight > 0) return;                       // a save is still in flight: keep local state, pick up next round
+      var sig = JSON.stringify([remote.done || {}, remote.notes || {}]);
       done = remote.done || {};
       notes = remote.notes || {};
       Object.keys(pending).forEach(function(id){ if (pending[id]) done[id] = 1; else delete done[id]; });
-      render();
-      setStatus("Synchronized " + timeNow(), "ok");
+      if (sig !== lastSig) { lastSig = sig; render(); }   // only redraw when something actually changed
+      setStatus("Synchronized at " + timeNow(), "ok");
     })
     .catch(function(e){
+      failCount++;
       console.error("Failed to load team data", e);
-      setStatus("Tidak dapat sambung ke data pasukan. Semak akses atau refresh.", "err");
-    });
+      if (failCount >= 2) setStatus("Tidak dapat sambung ke database. Cuba lagi secara automatik... (semak akses atau refresh jika berterusan)", "err");
+      else setStatus("Menyambung semula...", "");
+    })
+    .then(function(){ if (to) clearTimeout(to); loading = false; });
 }
 
 function lastNoteEntry(history){
@@ -1142,7 +1157,13 @@ $("pdDelete").addEventListener("click", function(){
 
 render();
 loadTeamData();
-setInterval(function(){ if (!document.hidden) loadTeamData(); }, POLL_MS);
+// Poll with back-off: 6s normally, slower after repeated failures (max 60s). Paused while the tab is hidden.
+function pollLoop(){
+  var delay = Math.min(60000, POLL_MS * Math.pow(2, Math.min(failCount, 4)));
+  setTimeout(function(){ (document.hidden ? Promise.resolve() : loadTeamData()).then(pollLoop); }, delay);
+}
+pollLoop();
+window.addEventListener("online", function(){ loadTeamData(); });
 document.addEventListener("visibilitychange", function(){ if (!document.hidden) loadTeamData(); });
 </script>
 </body>

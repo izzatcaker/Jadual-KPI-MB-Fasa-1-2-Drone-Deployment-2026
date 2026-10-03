@@ -612,12 +612,12 @@ function loadTeamData(){
       notes = remote.notes || {};
       Object.keys(pending).forEach(function(id){ if (pending[id]) done[id] = 1; else delete done[id]; });
       if (sig !== lastSig) { lastSig = sig; render(); }   // only redraw when something actually changed
-      setStatus("Disegerakkan dengan pasukan pada " + timeNow(), "ok");
+      setStatus("Synchronized at " + timeNow(), "ok");
     })
     .catch(function(e){
       failCount++;
       console.error("Failed to load team data", e);
-      if (failCount >= 2) setStatus("Tidak dapat sambung ke data pasukan. Cuba lagi secara automatik... (semak akses Web App jika berterusan)", "err");
+      if (failCount >= 2) setStatus("Tidak dapat sambung ke database. Cuba lagi secara automatik... (semak akses atau refresh jika berterusan)", "err");
       else setStatus("Menyambung semula...", "");
     })
     .then(function(){ if (to) clearTimeout(to); loading = false; });

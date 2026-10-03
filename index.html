@@ -302,6 +302,18 @@ dialog { border-radius:22px; }
 .theme-btn:hover { background:rgba(255,255,255,.3); } .theme-btn:active { transform:scale(.96); }
 .theme-btn:focus-visible { outline:2px solid #fff; outline-offset:2px; }
 @media (max-width:540px) { header { padding:18px; border-radius:18px; } .filters { position:static; } }
+/* Upgrades */
+.hdr-tools { position:absolute; top:16px; right:16px; z-index:2; display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+.hdr-tools .theme-btn { position:static; }
+.qbox { font:inherit; font-size:.9rem; padding:6px 14px; border:1px solid var(--line); border-radius:999px; background:var(--surface); color:var(--ink); min-width:210px; }
+.qbox:focus { outline:2px solid var(--focus); outline-offset:1px; }
+#qInfo { font-size:.82rem; color:var(--muted); font-weight:600; }
+.slink { align-self:flex-start; font-size:.76rem; font-weight:600; color:inherit; border:1px solid color-mix(in srgb,currentColor 35%,transparent); border-radius:999px; padding:0 10px; text-decoration:none; line-height:1.6; }
+.slink:hover { background:color-mix(in srgb,currentColor 10%,transparent); }
+body.locked #tDisplay,body.locked #tLink,body.locked #nameBtn,body.locked #addPeriod { display:none !important; }
+[hidden] { display:none !important; }
+body.pinlocked #tDisplay,body.locked #pinBtn { display:none !important; }
+@media (max-width:540px) { header { padding-top:62px !important; } .hdr-tools { top:12px; right:12px; } .qbox { min-width:0; width:100%; } }
 @media (max-width:900px) { .grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .pbars { grid-template-columns:minmax(0,1fr); } .pbar { grid-column:auto !important; } .pbar.anch { grid-column:1 / -1 !important; grid-row:auto !important; margin-top:0; border-top-left-radius:6px; } }
 @media (max-width:540px) {
   .wrap { padding:20px 14px 50px; }
@@ -319,7 +331,7 @@ dialog { border-radius:22px; }
 <body>
 <div class="wrap">
   <header>
-    <button type="button" class="theme-btn" id="themeBtn" aria-label="Tukar tema">🌓 Auto</button>
+    <div class="hdr-tools"><button type="button" class="theme-btn" id="pinBtn" aria-label="PIN edit" hidden>🔒 Buka edit</button><button type="button" class="theme-btn" id="nameBtn" aria-label="Tetapkan nama">👤 Tetapkan nama</button><button type="button" class="theme-btn" id="themeBtn" aria-label="Tukar tema">🌓 Auto</button></div>
     <h1>Timeline video survey junction</h1>
     <p>21 Sep – 3 Nov 2026. Data is synced live with the team!</p>
     <p class="sync" id="sync" role="status" aria-live="polite"></p>
@@ -327,33 +339,23 @@ dialog { border-radius:22px; }
 
   <div class="stats" id="stats"><p>Loading team progress...</p></div>
 
-  <section class="today-box" id="todayBox" aria-label="Tugasan hari ini"></section>
+  <section class="today-box" id="todayBox" aria-label="Tugasan hari ini"><div id="todayBody"></div></section>
 
   <section class="feed" id="feed" hidden aria-label="Nota terkini"></section>
 
   <div class="filters" role="toolbar" aria-label="Tapis timeline">
+    <div class="group"><input type="search" class="qbox" id="q" placeholder="🔍 Cari kod (cth B45, PT004K)" aria-label="Cari kod persimpangan" autocomplete="off"><span id="qInfo" role="status"></span><button type="button" class="chip" id="qGo" hidden>Pergi ke pertama</button></div>
     <div class="group" id="fAuth"><span class="lbl">Pihak berkuasa</span></div>
     <div class="group" id="fKind"><span class="lbl">Jenis video</span></div>
     <div class="group"><button type="button" class="chip" id="addPeriod">+ Tempoh fine-tune</button></div>
     <div class="group" id="fView"><span class="lbl">Paparan</span></div>
     <div class="group" id="gWeeks"><button type="button" class="chip" id="wkOpen">Buka semua minggu</button><button type="button" class="chip" id="wkClose">Tutup semua</button></div>
-    <div class="group"><button type="button" class="chip" id="tCompact" aria-pressed="false">Ringkas</button><button type="button" class="chip" id="tDisplay" aria-pressed="false">Mod baca sahaja</button></div>
+    <div class="group"><button type="button" class="chip" id="tCompact" aria-pressed="false">Ringkas</button><button type="button" class="chip" id="tDisplay" aria-pressed="false">Mod baca sahaja</button><button type="button" class="chip" id="tLink">Salin pautan baca sahaja</button></div>
   </div>
 
   <main id="weeks"></main>
 
   <details class="check">
-    <summary>Perkara untuk disemak dalam jadual asal</summary>
-    <ol>
-      <li><b>Tarikh dan hari tak sepadan pada minggu 12 Okt.</b> Dalam sheet, 14/10 ditulis Tuesday, 15/10 ditulis Wednesday dan 16/10 ditulis Thursday, tapi sebenarnya 14/10 ialah Wednesday, 15/10 Thursday dan 16/10 Friday. Aku ikut nama hari dan corak Mon–Thu, jadi sesi tu dianjak ke 13/10, 14/10 dan 15/10 (ditanda merah kecil dalam kad).</li>
-      <li><b>Ada sesi berulang.</b> A7+A33+A8+A9 (Before) ada pada 24/9 dan 6/10. B74+B75+B79 (Before) ada pada 22/9 dan 7/10. A11,A12 (After) ada pada 6/10 dan 3/11. Kalau ini retake, okay; kalau bukan, mungkin salah taip.</li>
-      <li><b>Fine-tune.</b> Aku letak fine-tune tepat 7 hari sebelum setiap sesi After (hari yang sama, minggu sebelumnya). A13 After pada 21/9 tak dapat fine-tune sebab 14/9 dah lepas. Tiga fine-tune (7/10, 22/10, 27/10) masuk dalam slot AM yang kosong. Sepuluh lagi jatuh pada hari yang dah ada sesi lain, ditanda "Bertindih" dan letak di bawah kad. Kalau fine-tune dibuat oleh kru yang sama dengan drone, sesi tu kena dianjak ke slot kosong (contoh Isnin).</li>
-      <li><b>A13 After (21/9) datang sebelum A13 Before (28/9).</b> Nota sheet cakap Before ikut masa tetap, After on demand, jadi mungkin memang disengajakan.</li>
-      <li><b>D12–D15 dan C42/C62</b> hanya ada video After, tiada Before dalam jadual.</li>
-    </ol>
-  </details>
-
-  <details class="check" style="margin-top:16px;">
     <summary>Sync dengan perancangan virtual loop &amp; countdown timer</summary>
     <ol>
       <li><b>Dikemas kini 22/9/2026, ikut pengesahan team projek:</b> tiada lagi penukaran controller pending (semua persimpangan) - baki isu cuma virtual loop dan countdown timer sahaja.</li>
@@ -369,6 +371,10 @@ dialog { border-radius:22px; }
 
   <p class="foot">Warna ikut sheet asal: merah jambu ialah Before, biru ialah After, kuning ialah fine-tune seminggu sebelum After, kelabu putus-putus ialah slot kosong. Sempadan oren = tertangguh, sempadan kelabu = dibatalkan. Sempadan dua garis merah = ada isu virtual loop/countdown timer (semak dalam kad). Klik kad untuk tanda Siap. Kotak kuning = nota pasukan. Slot "Kosong" boleh diisi dengan "+ Tambah rancangan". Bar kuning melintang = tempoh fine-tune (guna "+ Tempoh fine-tune"). Guna "Edit jadual" untuk tukar tarikh, slot, jenis atau persimpangan secara langsung; perubahan dikongsi dengan pasukan dan boleh dikembalikan kepada jadual asal.</p>
 </div>
+
+<dialog id="pinDialog"><form class="nd-inner" method="dialog" id="pinForm"><h3>🔒 Buka edit</h3><p class="nd-context">Masukkan PIN untuk mengedit jadual. Tanpa PIN, halaman ini baca sahaja.</p><label class="nd-field">PIN<input type="password" id="pinIn" autocomplete="off" required></label><p class="nd-status" id="pinMsg" role="status" aria-live="polite"></p><div class="nd-actions"><div class="right"><button type="button" class="nd-btn" id="pinCancel">Batal</button><button class="nd-btn primary" type="submit">Buka</button></div></div></form></dialog>
+
+<dialog id="copyDialog"><form class="nd-inner" method="dialog"><h3>Salin teks ini</h3><p class="nd-context">Salin automatik tidak tersedia. Tekan dan salin teks di bawah.</p><textarea id="cpText" readonly rows="10" style="width:100%;font:inherit;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)"></textarea><div class="nd-actions"><div class="right"><button class="nd-btn primary" type="submit">Tutup</button></div></div></form></dialog>
 
 <dialog id="noteDialog">
   <form class="nd-inner" method="dialog" id="noteForm">
@@ -421,6 +427,7 @@ dialog { border-radius:22px; }
     <label class="nd-field">Persimpangan<input type="text" id="edJunc" required></label>
     <label class="nd-field">Fasa<input type="text" id="edPhase"></label>
     <label class="nd-field">Nota pada kad (pilihan)<input type="text" id="edCardNote"></label>
+    <label class="nd-field">Pautan (Drive / rakaman, pilihan)<input type="url" id="edLink" placeholder="https://..."></label>
     <label class="nd-field">Sebab perubahan (akan jadi nota kuning)
       <textarea id="edReason" placeholder="Cth: Kru tak cukup, anjak ke Selasa" required></textarea>
     </label>
@@ -461,6 +468,9 @@ dialog { border-radius:22px; }
 const WEB_APP_URL = "https://script.google.com/a/macros/southmax.com.my/s/AKfycbxuEODr5uvcGS8GKcfi1O4dCE_GNki4SN8ackIxzxRmOqzAMEUsC9-YDyOuI48E4z4/exec";
 // How often (ms) to pull other people's changes while the page is open
 const POLL_MS = 6000;
+// Optional edit PIN. "" = anyone can edit. Otherwise the page opens read-only until the PIN is entered.
+// To set one: open the page, press F12 > Console, run  makePin("your-pin")  and paste the result between the quotes.
+const EDIT_PIN_HASH = "";
 
 var AUTH = { MBJB: "Majlis Bandaraya Johor Bahru", MBPG: "Majlis Bandaraya Pasir Gudang", MBIP: "Majlis Bandaraya Iskandar Puteri", MPKu: "Majlis Perbandaran Kulai" };
 var PK = "Phase 1+2 (combined)";
@@ -521,14 +531,14 @@ function setStatus(text, kind){ var el = document.getElementById("sync"); el.tex
 function timeNow(){ return new Date().toLocaleTimeString("ms-MY", { hour: "2-digit", minute: "2-digit" }); }
 
 function syncDone(id, isDone){
-  return fetch(WEB_APP_URL + "?action=set&id=" + encodeURIComponent(id) + "&done=" + isDone)
+  return fetch(WEB_APP_URL + "?action=set&id=" + encodeURIComponent(id) + "&done=" + isDone + pinParam())
     .then(function(r){ return r.json(); })
     .then(function(j){ if (!j || !j.ok) throw new Error("Unexpected response from Web App"); });
 }
 function syncNote(id, payload){
   var qs = "?action=note&id=" + encodeURIComponent(id) +
     "&status=" + encodeURIComponent(payload.status) + "&note=" + encodeURIComponent(payload.note) +
-    "&author=" + encodeURIComponent(payload.author) + "&vl=" + encodeURIComponent(payload.vl) + "&vlNote=" + encodeURIComponent(payload.vlNote);
+    "&author=" + encodeURIComponent(payload.author) + "&vl=" + encodeURIComponent(payload.vl) + "&vlNote=" + encodeURIComponent(payload.vlNote) + pinParam();
   return fetch(WEB_APP_URL + qs)
     .then(function(r){ return r.json(); })
     .then(function(j){ if (!j || !j.ok) throw new Error("Unexpected response from Web App"); });
@@ -576,7 +586,7 @@ function prep(dateKey, s, k, moves, isMain, forcedId){
   c._id = id;
   var ov = edits[id];
   if (!ov) return c;
-  ["s","t","a","p","j","n"].forEach(function(f){ if (ov[f] !== undefined) c[f] = ov[f]; });
+  ["s","t","a","p","j","n","link"].forEach(function(f){ if (ov[f] !== undefined) c[f] = ov[f]; });
   c.edited = { by: ov.by, at: ov.at, from: dateKey, fromS: s.s, reason: ov.reason, added: s.t === "free" };
   if ((ov.date && ov.date !== dateKey) || ov.hidden) {
     if (!ov.hidden) moves.push({ date: ov.date, slot: c });
@@ -602,12 +612,12 @@ function loadTeamData(){
       notes = remote.notes || {};
       Object.keys(pending).forEach(function(id){ if (pending[id]) done[id] = 1; else delete done[id]; });
       if (sig !== lastSig) { lastSig = sig; render(); }   // only redraw when something actually changed
-      setStatus("Synchronized at " + timeNow(), "ok");
+      setStatus("Disegerakkan dengan pasukan pada " + timeNow(), "ok");
     })
     .catch(function(e){
       failCount++;
       console.error("Failed to load team data", e);
-      if (failCount >= 2) setStatus("Tidak dapat sambung ke database. Cuba lagi secara automatik... (semak akses atau refresh jika berterusan)", "err");
+      if (failCount >= 2) setStatus("Tidak dapat sambung ke data pasukan. Cuba lagi secara automatik... (semak akses Web App jika berterusan)", "err");
       else setStatus("Menyambung semula...", "");
     })
     .then(function(){ if (to) clearTimeout(to); loading = false; });
@@ -641,13 +651,14 @@ function slotHTML(dateKey, s, idx){
       '<div class="nc-h"><span>📝 NOTA' + (curStatus ? ' · ' + STATUSLBL[curStatus].toUpperCase() : '') + '</span><span>' + esc((shown || nd).author || "?") + ' · ' + esc(fmtAt((shown || nd).at)) + '</span></div>' +
       (shown ? '<div class="nc-b" title="' + esc(shown.note) + '">' + esc(shown.note) + '</div>' : '') + '</div>';
   }
+  if (s.link && /^https?:\/\//i.test(s.link)) footer += '<a class="slink" href="' + esc(s.link) + '" target="_blank" rel="noopener noreferrer">🔗 Pautan</a>';
   footer += '<div class="foot-btns"><button type="button" class="note-btn' + (history.length ? " has" : "") + '" data-id="' + id + '">' + (history.length ? "📝 Nota (" + history.length + ")" : "+ Nota") + '</button>' +
     '<button type="button" class="edit-btn" data-id="' + id + '">✎ Edit</button></div></div>';
 
   var ed = s.edited;
   var edTag = ed ? '<span class="edited-tag">' + (ed.added ? "➕ Ditambah" : "✎ Disunting") + (ed.from !== dateKey ? ' (asal ' + fmt(parse(ed.from)) + ')' : '') + (ed.by ? ' oleh ' + esc(ed.by) : '') + '</span>' : '';
 
-  return '<div class="slot-card ' + s.t + fullCls + (isDone ? " done" : "") + statusCls + conflictCls + '" data-id="' + id + '" data-auth="' + s.a + '" data-kind="' + s.t + '">' +
+  return '<div class="slot-card ' + s.t + fullCls + (isDone ? " done" : "") + statusCls + conflictCls + '" data-id="' + id + '" data-auth="' + s.a + '" data-kind="' + s.t + '" data-j="' + esc(s.j + " " + (s.n || "")) + '">' +
     '<button type="button" class="slot-toggle" data-id="' + id + '" aria-pressed="' + isDone + '" title="' + esc(AUTH[s.a] || s.a) + '">' +
     '<span class="slot-top"><span>' + WHEN[s.s] + '</span><span class="kind"><span class="tick">Siap </span>' + KINDLBL[s.t] + '</span></span>' +
     '<span class="junc">' + esc(s.j) + '</span><span class="meta">' + esc(s.a) + ', ' + esc(s.p) + '</span>' +
@@ -728,9 +739,22 @@ function updateStats(){
   document.getElementById("stats").innerHTML = '<div class="stat"><b>' + (before + after) + '</b><span>sesi rakaman</span></div><div class="stat"><b>' + before + '</b><span>Before</span></div><div class="stat"><b>' + after + '</b><span>After</span></div><div class="stat"><b>' + tn + '</b><span>Fine-tune</span></div><div class="stat"><b>' + Object.keys(days).length + '</b><span>hari turun lapangan</span></div><div class="stat"><b>' + flagged + '</b><span>tertangguh/dibatalkan</span></div><div class="stat progress"><b>' + doneN + ' / ' + slots.length + '</b><span>siap (' + pct + '%)</span><div class="bar"><i style="width:' + pct + '%"></i></div></div>';
 }
 
+var query = "", firstHit = null;
+function norm(t){ return " " + String(t || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim() + " "; }
 function applyFilter(){
   var nodes = document.querySelectorAll(".slot-card[data-auth], .pbar[data-auth], .mchip[data-auth]");
-  for (var i = 0; i < nodes.length; i++) { var n = nodes[i]; var ok = (filt.auth === "all" || n.getAttribute("data-auth") === filt.auth) && (filt.kind === "all" || n.getAttribute("data-kind") === filt.kind); n.classList.toggle("dim", !ok); }
+  var q = norm(query).trim(), hits = [];
+  for (var i = 0; i < nodes.length; i++) {
+    var n = nodes[i];
+    var ok = (filt.auth === "all" || n.getAttribute("data-auth") === filt.auth) && (filt.kind === "all" || n.getAttribute("data-kind") === filt.kind);
+    var hit = !q || norm(n.getAttribute("data-j")).indexOf(" " + q) !== -1;   // match from the start of a code
+    n.classList.toggle("dim", !(ok && hit));
+    if (q && ok && hit) hits.push(n);
+  }
+  var info = document.getElementById("qInfo"); if (info) info.textContent = q ? (hits.length ? hits.length + " sesi dijumpai" : "Tiada padanan") : "";
+  var go = document.getElementById("qGo"); if (go) go.hidden = !(q && hits.length);
+  firstHit = hits[0] || null;
+  hits.forEach(function(n){ var sec = n.closest(".week"); if (sec) { sec.classList.remove("collapsed"); var h = sec.querySelector(".wk-h"); if (h) h.setAttribute("aria-expanded", "true"); } });
 }
 
 function buildChips(containerId, key, items){
@@ -816,7 +840,7 @@ function renderHistory(history){
   }).join("");
 }
 
-function safeStore(k, v){ try { localStorage.setItem(k, v); } catch (e) {} }
+function safeStore(k, v){ try { localStorage.setItem(k, v); } catch (e) {} if (k === "noteAuthor" && typeof showName === "function") showName(); }
 function safeGet(k){ try { return localStorage.getItem(k) || ""; } catch (e) { return ""; } }
 
 function openNoteDialog(id){
@@ -885,7 +909,7 @@ function openEditDialog(id){
   var fr = s.t === "free";
   $("edContext").textContent = fr ? "Slot kosong " + fmt(parse(b.date)) + " · " + WHEN[s.s] + ". Isi untuk tambah rancangan." : "Asal: " + (SLOTMETA[id] || id) + ". Perubahan dikongsi dengan pasukan serta-merta.";
   $("edDate").value = b.date; $("edSlot").value = s.s; $("edKind").value = fr ? "before" : s.t; $("edAuth").value = fr ? Object.keys(AUTH)[0] : s.a;
-  $("edJunc").value = s.j || ""; $("edPhase").value = s.p || ""; $("edCardNote").value = s.n || "";
+  $("edJunc").value = s.j || ""; $("edLink").value = s.link || ""; $("edPhase").value = s.p || ""; $("edCardNote").value = s.n || "";
   $("edReason").value = ""; $("edAuthor").value = safeGet("noteAuthor"); $("edEnd").value = ""; toggleEnd();
   $("edMsg").textContent = ""; $("edMsg").className = "nd-status";
   $("edReset").style.display = edits[id] ? "" : "none";
@@ -923,8 +947,10 @@ $("editForm").addEventListener("submit", function(e){
   var author = $("edAuthor").value.trim(), reason = $("edReason").value.trim();
   if (!author || !reason) { $("edMsg").textContent = "Sila isi nama dan sebab perubahan."; $("edMsg").className = "nd-status err"; return; }
   safeStore("noteAuthor", author);
+  var lk = $("edLink").value.trim();
+  if (lk && !/^https?:\/\//i.test(lk)) { $("edMsg").textContent = "Pautan mesti bermula dengan http:// atau https://"; $("edMsg").className = "nd-status err"; return; }
   var s = b.slot;
-  var ov = { date: $("edDate").value, s: $("edSlot").value, t: $("edKind").value, a: $("edAuth").value, p: $("edPhase").value.trim(), j: $("edJunc").value.trim(), n: $("edCardNote").value.trim(), reason: reason };
+  var ov = { date: $("edDate").value, s: $("edSlot").value, t: $("edKind").value, a: $("edAuth").value, p: $("edPhase").value.trim(), j: $("edJunc").value.trim(), n: $("edCardNote").value.trim(), link: lk, reason: reason };
   var endV = $("edEnd").value;
   if (s.t === "free") { pushEdit(id, ov, reason, author, "➕ Rancangan ditambah: " + KINDLBL[ov.t] + ", " + ov.a + ", " + ov.j + " (" + WHEN[ov.s] + ")."); return; }
   if (ov.t === "tune" && endV && endV > ov.date) {
@@ -942,6 +968,7 @@ $("editForm").addEventListener("submit", function(e){
   if (ov.j !== s.j) ch.push("persimpangan " + s.j + " → " + ov.j);
   if (ov.p !== (s.p || "")) ch.push("fasa → " + ov.p);
   if (ov.n !== (s.n || "")) ch.push("nota kad diubah");
+  if (ov.link !== (s.link || "")) ch.push("pautan diubah");
   pushEdit(id, ov, reason, author, "✎ Jadual diubah: " + (ch.length ? ch.join("; ") + "." : "tiada perubahan medan."));
 });
 $("edReset").addEventListener("click", function(){
@@ -955,16 +982,18 @@ $("edReset").addEventListener("click", function(){
 // --- View modes: week / list / month, compact, read-only display ---
 var view = { layout: "week", compact: false, dm: false };
 try { var sv = JSON.parse(localStorage.getItem("tlView") || "{}"); if (sv.layout === "week" || sv.layout === "month") view.layout = sv.layout; view.compact = !!sv.compact; view.dm = !!sv.dm; } catch (e) {}
-if (/[?&]display=1/.test(location.search)) view.dm = true;
+var LOCKED = /[?&](display|view)=1/.test(location.search); // read-only link
+var pinOk = !EDIT_PIN_HASH, sessionPin = "";
+if (LOCKED) view.dm = true;
 var LAYS = [["week", "Minggu"], ["month", "Bulan"]];
 function applyView(){
   var c = document.body.classList;
   LAYS.forEach(function(l){ c.toggle("lay-" + l[0], view.layout === l[0]); });
-  c.toggle("compact", view.compact); c.toggle("dm", view.dm);
+  c.toggle("compact", view.compact); c.toggle("dm", view.dm || !pinOk); c.toggle("locked", LOCKED); c.toggle("pinlocked", !pinOk);
   Array.prototype.forEach.call(document.querySelectorAll("#fView .chip"), function(b){ b.setAttribute("aria-pressed", String(b.getAttribute("data-v") === view.layout)); });
   document.getElementById("tCompact").setAttribute("aria-pressed", String(view.compact));
   document.getElementById("tDisplay").setAttribute("aria-pressed", String(view.dm));
-  safeStore("tlView", JSON.stringify(view));
+  safeStore("tlView", JSON.stringify({ layout: view.layout, compact: view.compact, dm: LOCKED ? false : view.dm }));
 }
 var weekState = {};
 try { weekState = JSON.parse(localStorage.getItem("tlWeeks") || "{}") || {}; } catch (e) {}
@@ -1015,9 +1044,9 @@ function monthHTML(){
       if (row) row[1].concat(row[2] || []).forEach(function(s){
         if (s.t === "free") return;
         var h = notes[s._id] || [];
-        html += '<button type="button" class="mchip ' + s.t + (done[s._id] ? " done" : "") + '" data-go="' + s._id + '" data-auth="' + s.a + '" data-kind="' + s.t + '">' + WHEN[s.s] + ' · ' + esc(s.j) + (h.length ? " 📝" : "") + '</button>';
+        html += '<button type="button" class="mchip ' + s.t + (done[s._id] ? " done" : "") + '" data-go="' + s._id + '" data-auth="' + s.a + '" data-kind="' + s.t + '" data-j="' + esc(s.j + " " + (s.n || "")) + '">' + WHEN[s.s] + ' · ' + esc(s.j) + (h.length ? " 📝" : "") + '</button>';
       });
-      Object.keys(periods).forEach(function(pid){ var p = periods[pid]; if (key >= p.start && key <= p.end) html += '<button type="button" class="mchip tune" data-go="" data-auth="' + esc(p.a) + '" data-kind="tune">🔧 ' + esc(p.j) + '</button>'; });
+      Object.keys(periods).forEach(function(pid){ var p = periods[pid]; if (key >= p.start && key <= p.end) html += '<button type="button" class="mchip tune" data-go="" data-auth="' + esc(p.a) + '" data-kind="tune" data-j="' + esc(p.j + " " + (p.n || "")) + '">🔧 ' + esc(p.j) + '</button>'; });
       html += '</div>';
     }
     html += '</div>';
@@ -1072,7 +1101,7 @@ function renderToday(){
   if (nOver) html += '<details' + (todayOverOpen ? ' open' : '') + '><summary>⚠ ' + nOver + ' sesi tertunggak (tarikh lepas, belum ditanda siap)</summary>' + over.map(function(it){ return tdItem(it, true); }).join("") +
     overP.map(function(p){ return '<div class="td-item late"><div><b>🔧 Fine-tune · ' + fmt(parse(p.start)) + ' – ' + fmt(parse(p.end)) + '</b> · ' + esc(p.j) + ' <span class="td-m">' + esc(p.a) + '</span></div></div>'; }).join("") + '</details>';
   box.className = "today-box" + (left || nOver ? " alert" : "");
-  if (html !== lastTodayHtml) { box.innerHTML = html; lastTodayHtml = html; }
+  if (html !== lastTodayHtml) { document.getElementById("todayBody").innerHTML = html; lastTodayHtml = html; }
   document.title = (left ? "(" + left + ") " : "") + "Timeline Video Survey Junction, 21 Sep – 3 Nov 2026";
 }
 document.getElementById("todayBox").addEventListener("toggle", function(e){ if (e.target.tagName === "DETAILS") todayOverOpen = e.target.open; }, true);
@@ -1081,11 +1110,68 @@ document.getElementById("todayBox").addEventListener("click", function(e){
   goCard(g.getAttribute("data-go"));
 });
 
+// --- Edit PIN (optional) ---
+function sha256(t){
+  if (!(window.crypto && crypto.subtle)) return Promise.reject(new Error("nosubtle"));
+  return crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)).then(function(b){ return Array.prototype.map.call(new Uint8Array(b), function(x){ return ("0" + x.toString(16)).slice(-2); }).join(""); });
+}
+window.makePin = function(pin){ return sha256(String(pin)).then(function(h){ console.log(h); return h; }); };
+function pinParam(){ return sessionPin ? "&pin=" + encodeURIComponent(sessionPin) : ""; }
+function paintPin(){ var b = $("pinBtn"); if (!EDIT_PIN_HASH || LOCKED) { b.hidden = true; return; } b.hidden = false; b.textContent = pinOk ? "🔓 Kunci" : "🔒 Buka edit"; }
+function unlockWith(pin){
+  return sha256(pin).then(function(h){
+    if (h !== EDIT_PIN_HASH) return false;
+    pinOk = true; sessionPin = pin; try { sessionStorage.setItem("tlPin", pin); } catch (e) {}
+    applyView(); paintPin(); return true;
+  });
+}
+$("pinBtn").addEventListener("click", function(){
+  if (pinOk) { pinOk = false; sessionPin = ""; try { sessionStorage.removeItem("tlPin"); } catch (e) {} applyView(); paintPin(); return; }
+  $("pinIn").value = ""; $("pinMsg").textContent = ""; $("pinMsg").className = "nd-status";
+  if ($("pinDialog").showModal) $("pinDialog").showModal(); $("pinIn").focus();
+});
+$("pinCancel").addEventListener("click", function(){ $("pinDialog").close(); });
+$("pinForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  unlockWith($("pinIn").value).then(function(ok){
+    if (ok) $("pinDialog").close(); else { $("pinMsg").textContent = "PIN salah."; $("pinMsg").className = "nd-status err"; }
+  }).catch(function(){ $("pinMsg").textContent = "Pelayar ini tak boleh semak PIN (perlukan HTTPS)."; $("pinMsg").className = "nd-status err"; });
+});
+try { var sp = sessionStorage.getItem("tlPin"); if (EDIT_PIN_HASH && sp) unlockWith(sp).catch(function(){}); } catch (e) {}
+paintPin();
+
+// --- Search ---
+document.getElementById("q").addEventListener("input", function(){ query = this.value; applyFilter(); });
+document.getElementById("q").addEventListener("keydown", function(e){ if (e.key === "Escape") { this.value = ""; query = ""; applyFilter(); this.blur(); } });
+document.addEventListener("keydown", function(e){ if (e.key === "/" && !/INPUT|TEXTAREA|SELECT/.test((document.activeElement || {}).tagName || "")) { e.preventDefault(); document.getElementById("q").focus(); } });
+document.getElementById("qGo").addEventListener("click", function(){
+  if (!firstHit) return; var id = firstHit.getAttribute("data-id");
+  if (id) goCard(id); else firstHit.scrollIntoView({ behavior: "smooth", block: "center" });
+});
+
+// --- Name chip ---
+function showName(){ var n = safeGet("noteAuthor"), b = document.getElementById("nameBtn"); if (b) b.textContent = n ? "👤 " + n : "👤 Tetapkan nama"; }
+document.getElementById("nameBtn").addEventListener("click", function(){
+  var n = prompt("Nama anda (diisi automatik pada nota & suntingan):", safeGet("noteAuthor"));
+  if (n !== null) safeStore("noteAuthor", n.trim());
+});
+showName();
+
+// --- Copy read-only link ---
+function copyText(text, cb){
+  function fallback(){ document.getElementById("cpText").value = text; var d = document.getElementById("copyDialog"); if (d.showModal) d.showModal(); document.getElementById("cpText").select(); }
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(cb, fallback); else fallback();
+}
+document.getElementById("tLink").addEventListener("click", function(){
+  var btn = this, url = location.href.split("#")[0].split("?")[0] + "?display=1";
+  copyText(url, function(){ btn.textContent = "✓ Pautan disalin"; setTimeout(function(){ btn.textContent = "Salin pautan baca sahaja"; }, 1800); });
+});
+
 // --- Fine-tune periods ---
 function dayDiff(a, b){ return Math.round((parse(a) - parse(b)) / 864e5); }
 function barHTML(pid, p, c1, c2, lane, anchored, cont, more){
   var isDone = !!done["period:" + pid];
-  return '<div class="pbar' + (anchored ? " anch" : "") + (isDone ? " done" : "") + '" data-auth="' + esc(p.a) + '" data-kind="tune" style="grid-column:' + c1 + ' / ' + c2 + (anchored ? ';grid-row:' + (2 + lane) : '') + '">' +
+  return '<div class="pbar' + (anchored ? " anch" : "") + (isDone ? " done" : "") + '" data-auth="' + esc(p.a) + '" data-kind="tune" data-j="' + esc(p.j + " " + (p.n || "")) + '" style="grid-column:' + c1 + ' / ' + c2 + (anchored ? ';grid-row:' + (2 + lane) : '') + '">' +
     '<div class="pbar-h"><span>' + (cont ? "◀ " : "") + '🔧 FINE-TUNE · ' + fmt(parse(p.start)) + ' – ' + fmt(parse(p.end)) + (more ? " ▶" : "") + '</span><span>' + (isDone ? "✓ Siap · " : "") + esc(p.a) + '</span></div>' +
     '<div class="pj">' + esc(p.j) + '</div>' +
     (p.n ? '<div class="note-callout"><div class="nc-h"><span>📝 NOTA</span><span>' + esc(p.by || "?") + ' · ' + esc(fmtAt(p.at)) + '</span></div><div class="nc-b" title="' + esc(p.n) + '">' + esc(p.n) + '</div></div>' : '') +

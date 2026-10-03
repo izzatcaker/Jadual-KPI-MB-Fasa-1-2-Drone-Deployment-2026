@@ -468,9 +468,9 @@ body.pinlocked #tDisplay,body.locked #pinBtn { display:none !important; }
 const WEB_APP_URL = "https://script.google.com/a/macros/southmax.com.my/s/AKfycbxuEODr5uvcGS8GKcfi1O4dCE_GNki4SN8ackIxzxRmOqzAMEUsC9-YDyOuI48E4z4/exec";
 // How often (ms) to pull other people's changes while the page is open
 const POLL_MS = 6000;
-// Optional edit PIN. "" = anyone can edit. Otherwise the page opens read-only until the PIN is entered.
-// To set one: open the page, press F12 > Console, run  makePin("your-pin")  and paste the result between the quotes.
-const EDIT_PIN_HASH = "";
+// Edit PIN, checked by your Apps Script (script property EDIT_PIN). true = page opens read-only until the PIN is entered.
+// Set to false only if your script does not check the PIN yet.
+const EDIT_PIN_REQUIRED = true;
 
 var AUTH = { MBJB: "Majlis Bandaraya Johor Bahru", MBPG: "Majlis Bandaraya Pasir Gudang", MBIP: "Majlis Bandaraya Iskandar Puteri", MPKu: "Majlis Perbandaran Kulai" };
 var PK = "Phase 1+2 (combined)";
@@ -527,13 +527,17 @@ var EFF = [];       // effective schedule = DATA + live edits
 var BYID = {};      // slot id -> {date, slot}
 
 function isConfigured(){ return typeof WEB_APP_URL === "string" && WEB_APP_URL.indexOf("https://script.google.com/") === 0; }
-function setStatus(text, kind){ var el = document.getElementById("sync"); el.textContent = text; el.className = "sync" + (kind ? " " + kind : ""); }
+function setStatus(text, kind){ if (kind === "err" && /^Gagal/.test(text) && typeof EDIT_PIN_REQUIRED !== "undefined" && EDIT_PIN_REQUIRED && !pinOk) text = "PIN tidak sah atau tamat. Tekan \"Buka edit\" dan masukkan PIN semula."; var el = document.getElementById("sync"); el.textContent = text; el.className = "sync" + (kind ? " " + kind : ""); }
 function timeNow(){ return new Date().toLocaleTimeString("ms-MY", { hour: "2-digit", minute: "2-digit" }); }
 
+function checkOk(j){
+  if (j && j.ok === false && /pin/i.test(String(j.error || ""))) { relock(); throw new Error("PIN tidak sah"); }
+  if (!j || !j.ok) throw new Error("Unexpected response from Web App");
+}
 function syncDone(id, isDone){
   return fetch(WEB_APP_URL + "?action=set&id=" + encodeURIComponent(id) + "&done=" + isDone + pinParam())
     .then(function(r){ return r.json(); })
-    .then(function(j){ if (!j || !j.ok) throw new Error("Unexpected response from Web App"); });
+    .then(checkOk);
 }
 function syncNote(id, payload){
   var qs = "?action=note&id=" + encodeURIComponent(id) +
@@ -541,7 +545,7 @@ function syncNote(id, payload){
     "&author=" + encodeURIComponent(payload.author) + "&vl=" + encodeURIComponent(payload.vl) + "&vlNote=" + encodeURIComponent(payload.vlNote) + pinParam();
   return fetch(WEB_APP_URL + qs)
     .then(function(r){ return r.json(); })
-    .then(function(j){ if (!j || !j.ok) throw new Error("Unexpected response from Web App"); });
+    .then(checkOk);
 }
 
 // Count saves in flight so a refresh never overwrites something still being saved.
@@ -617,7 +621,7 @@ function loadTeamData(){
     .catch(function(e){
       failCount++;
       console.error("Failed to load team data", e);
-      if (failCount >= 2) setStatus("Tidak dapat sambung ke database. Cuba lagi secara automatik... (semak akses atau refresh jika berterusan)", "err");
+      if (failCount >= 2) setStatus("Tidak dapat sambung ke data pasukan. Cuba lagi secara automatik... (semak akses Web atau refresh berterusan)", "err");
       else setStatus("Menyambung semula...", "");
     })
     .then(function(){ if (to) clearTimeout(to); loading = false; });
@@ -983,7 +987,7 @@ $("edReset").addEventListener("click", function(){
 var view = { layout: "week", compact: false, dm: false };
 try { var sv = JSON.parse(localStorage.getItem("tlView") || "{}"); if (sv.layout === "week" || sv.layout === "month") view.layout = sv.layout; view.compact = !!sv.compact; view.dm = !!sv.dm; } catch (e) {}
 var LOCKED = /[?&](display|view)=1/.test(location.search); // read-only link
-var pinOk = !EDIT_PIN_HASH, sessionPin = "";
+var pinOk = !EDIT_PIN_REQUIRED, sessionPin = "";
 if (LOCKED) view.dm = true;
 var LAYS = [["week", "Minggu"], ["month", "Bulan"]];
 function applyView(){
@@ -1110,17 +1114,17 @@ document.getElementById("todayBox").addEventListener("click", function(e){
   goCard(g.getAttribute("data-go"));
 });
 
-// --- Edit PIN (optional) ---
-function sha256(t){
-  if (!(window.crypto && crypto.subtle)) return Promise.reject(new Error("nosubtle"));
-  return crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)).then(function(b){ return Array.prototype.map.call(new Uint8Array(b), function(x){ return ("0" + x.toString(16)).slice(-2); }).join(""); });
-}
-window.makePin = function(pin){ return sha256(String(pin)).then(function(h){ console.log(h); return h; }); };
+// --- Edit PIN (checked by the Apps Script) ---
 function pinParam(){ return sessionPin ? "&pin=" + encodeURIComponent(sessionPin) : ""; }
-function paintPin(){ var b = $("pinBtn"); if (!EDIT_PIN_HASH || LOCKED) { b.hidden = true; return; } b.hidden = false; b.textContent = pinOk ? "🔓 Kunci" : "🔒 Buka edit"; }
+function paintPin(){ var b = $("pinBtn"); if (!EDIT_PIN_REQUIRED || LOCKED) { b.hidden = true; return; } b.hidden = false; b.textContent = pinOk ? "🔓 Kunci" : "🔒 Buka edit"; }
+function relock(){
+  if (!EDIT_PIN_REQUIRED) return;
+  pinOk = false; sessionPin = ""; try { sessionStorage.removeItem("tlPin"); } catch (e) {}
+  applyView(); paintPin(); setStatus("PIN tidak sah. Tekan \"Buka edit\" dan masukkan PIN semula.", "err");
+}
 function unlockWith(pin){
-  return sha256(pin).then(function(h){
-    if (h !== EDIT_PIN_HASH) return false;
+  return fetch(WEB_APP_URL + "?action=checkpin&pin=" + encodeURIComponent(pin) + "&t=" + Date.now()).then(function(r){ return r.json(); }).then(function(j){
+    if (!j || j.ok !== true) return false;
     pinOk = true; sessionPin = pin; try { sessionStorage.setItem("tlPin", pin); } catch (e) {}
     applyView(); paintPin(); return true;
   });
@@ -1133,11 +1137,12 @@ $("pinBtn").addEventListener("click", function(){
 $("pinCancel").addEventListener("click", function(){ $("pinDialog").close(); });
 $("pinForm").addEventListener("submit", function(e){
   e.preventDefault();
+  $("pinMsg").textContent = "Menyemak..."; $("pinMsg").className = "nd-status";
   unlockWith($("pinIn").value).then(function(ok){
     if (ok) $("pinDialog").close(); else { $("pinMsg").textContent = "PIN salah."; $("pinMsg").className = "nd-status err"; }
-  }).catch(function(){ $("pinMsg").textContent = "Pelayar ini tak boleh semak PIN (perlukan HTTPS)."; $("pinMsg").className = "nd-status err"; });
+  }).catch(function(){ $("pinMsg").textContent = "Tidak dapat semak PIN. Semak sambungan atau tetapan skrip."; $("pinMsg").className = "nd-status err"; });
 });
-try { var sp = sessionStorage.getItem("tlPin"); if (EDIT_PIN_HASH && sp) unlockWith(sp).catch(function(){}); } catch (e) {}
+try { var sp = sessionStorage.getItem("tlPin"); if (EDIT_PIN_REQUIRED && sp) unlockWith(sp).catch(function(){}); } catch (e) {}
 paintPin();
 
 // --- Search ---

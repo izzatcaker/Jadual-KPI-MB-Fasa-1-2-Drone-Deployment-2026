@@ -325,10 +325,31 @@ body.pinlocked #tDisplay,body.locked #pinBtn { display:none !important; }
   .nd-row { grid-template-columns:1fr; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition:none !important; animation:none !important; } }
+/* A lone card fills the day */
+.slots > .slot-card:only-child{grid-row:span 2}
+@media (max-width:540px){.slots > .slot-card:only-child{grid-row:auto}}
+/* Slim Kosong strip on days that already have a plan */
+.slots.has-mini{grid-template-rows:none}
+.slot-card.free.mini{grid-row:auto;padding:3px 8px 3px 10px;min-height:0;border-radius:10px}
+.slot-card.free.mini .slot-toggle{padding:0;flex:1;flex-wrap:nowrap;gap:8px}
+.slot-card.free.mini .free-txt{flex:1;font-size:.8rem}
+.slot-card.free.mini .free-add{width:24px;height:24px;margin:0;align-self:center}
+.slot-card.free.mini .free-add svg{width:13px;height:13px}
+/* Icon buttons */
+.note-btn,.edit-btn{position:relative;width:28px;height:28px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;line-height:1}
+.note-btn svg,.edit-btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.note-btn .cnt{position:absolute;top:-7px;right:-7px;min-width:16px;height:16px;padding:0 3px;border-radius:99px;background:var(--note-ink);color:var(--note-bg);font-size:.7rem;font-weight:700;line-height:16px;text-align:center}
+.note-btn.on{background:var(--done);border-color:var(--done);color:#fff}
 </style>
 <script>try{var _t=localStorage.getItem("tlTheme");if(_t==="light"||_t==="dark")document.documentElement.setAttribute("data-theme",_t)}catch(e){}</script>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-3-3L5 17v3z"/><path d="M13.5 6.5l4 4"/></symbol>
+<symbol id="i-add" viewBox="0 0 24 24"><path d="M8 9h8M8 13h6M12 18.6l-4 2.4v-3H6a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v5.5M16 19h6M19 16v6"/></symbol>
+<symbol id="i-msg" viewBox="0 0 24 24"><path d="M8 9h8M8 13h6M9 18H6a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-3l-3 3-3-3z"/></symbol>
+<symbol id="i-chk" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></symbol>
+</svg>
 <div class="wrap">
   <header>
     <div class="hdr-tools"><button type="button" class="theme-btn" id="pinBtn" aria-label="PIN edit" hidden>🔒 Buka edit</button><button type="button" class="theme-btn" id="nameBtn" aria-label="Tetapkan nama">👤 Tetapkan nama</button><button type="button" class="theme-btn" id="themeBtn" aria-label="Tukar tema">🌓 Auto</button></div>
@@ -508,6 +529,7 @@ var DAYN = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]; var MON = ["Jan","Feb","
 var WHEN = {am:"AM", pm:"PM", full:"AM/PM", x:"Tambahan"}; var KINDLBL = {before:"Before", after:"After", tune:"Fine-tune"};
 var STATUSLBL = {delayed:"Tertangguh", cancelled:"Dibatalkan"};
 function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function ico(n){ return '<svg aria-hidden="true"><use href="#i-' + n + '"/></svg>'; }
 function parse(k){ var p = k.split("-"); return new Date(+p[0], +p[1]-1, +p[2]); }
 function fmt(d){ return d.getDate() + " " + MON[d.getMonth()]; }
 function keyOf(d){ var m = d.getMonth()+1, dd = d.getDate(); return d.getFullYear()+"-"+(m<10?"0":"")+m+"-"+(dd<10?"0":"")+dd; }
@@ -635,7 +657,7 @@ function lastNoteEntry(history){
 function slotHTML(dateKey, s, idx){
   var id = idOf(dateKey, s, idx);
   var fullCls = s.s === "full" ? " full" : "";
-  if (s.t === "free") return '<div class="slot-card free' + fullCls + '"><div class="slot-toggle" style="cursor:default"><span class="slot-top"><span>' + WHEN[s.s] + '</span></span><span class="free-txt">Kosong</span><button type="button" class="edit-btn free-add" data-id="' + id + '">+ Tambah rancangan</button></div></div>';
+  if (s.t === "free") return '<div class="slot-card free' + fullCls + '"><div class="slot-toggle" style="cursor:default"><span class="slot-top"><span>' + WHEN[s.s] + '</span></span><span class="free-txt">Kosong</span><button type="button" class="edit-btn free-add" data-id="' + id + '" title="Tambah rancangan" aria-label="Tambah rancangan">' + ico("add") + '</button></div></div>';
 
   var isDone = !!done[id];
   var history = notes[id] || [];
@@ -656,8 +678,9 @@ function slotHTML(dateKey, s, idx){
       (shown ? '<div class="nc-b" title="' + esc(shown.note) + '">' + esc(shown.note) + '</div>' : '') + '</div>';
   }
   if (s.link && /^https?:\/\//i.test(s.link)) footer += '<a class="slink" href="' + esc(s.link) + '" target="_blank" rel="noopener noreferrer">🔗 Pautan</a>';
-  footer += '<div class="foot-btns"><button type="button" class="note-btn' + (history.length ? " has" : "") + '" data-id="' + id + '">' + (history.length ? "📝 Nota (" + history.length + ")" : "+ Nota") + '</button>' +
-    '<button type="button" class="edit-btn" data-id="' + id + '">✎ Edit</button></div></div>';
+  var nl = history.length ? "Nota (" + history.length + ")" : "Tambah nota";
+  footer += '<div class="foot-btns"><button type="button" class="note-btn' + (history.length ? " has" : "") + '" data-id="' + id + '" title="' + nl + '" aria-label="' + nl + '">' + ico(history.length ? "msg" : "add") + (history.length ? '<span class="cnt">' + history.length + '</span>' : '') + '</button>' +
+    '<button type="button" class="edit-btn" data-id="' + id + '" title="Edit" aria-label="Edit">' + ico("pen") + '</button></div></div>';
 
   var ed = s.edited;
   var edTag = ed ? '<span class="edited-tag">' + (ed.added ? "➕ Ditambah" : "✎ Disunting") + (ed.from !== dateKey ? ' (asal ' + fmt(parse(ed.from)) + ')' : '') + (ed.by ? ' oleh ' + esc(ed.by) : '') + '</span>' : '';
@@ -686,8 +709,9 @@ function render(){
       '<span class="wk-prog"><span class="wk-n">' + cnt.d + ' / ' + cnt.n + ' siap</span><span class="wk-bar"><i style="width:' + (cnt.n ? Math.round(cnt.d / cnt.n * 100) : 0) + '%"></i></span></span></button><div class="wk-body">' + lay.above + '<div class="grid">';
     rows.forEach(function(row, ri){
       var d = parse(row[0]); var isToday = row[0] === todayKey; var slots = row[1];
+      var hasPlan = slots.concat(row[2] || []).some(function(s){ return s.t !== "free"; }); // on planned days, Kosong shrinks to a slim strip
       html += '<div class="day' + (isToday ? " today" : "") + '" id="d-' + row[0] + '"><div class="day-h"><b>' + DAYN[d.getDay()] + '</b><span>' + (isToday ? '<span class="badge-today">Hari ini</span> ' : '') + fmt(d) + '</span></div>' +
-        (slots.length ? '<div class="slots">' + slots.map(function(s, k){ return slotHTML(row[0], s, k); }).join("") + '</div>' : '') +
+        (slots.length ? '<div class="slots' + (hasPlan && slots.some(function(s){ return s.t === "free"; }) ? ' has-mini' : '') + '">' + slots.map(function(s, k){ var h = slotHTML(row[0], s, k); return hasPlan && s.t === "free" ? h.replace('class="slot-card free', 'class="slot-card free mini') : h; }).join("") + '</div>' : '') +
         (row[2] && row[2].length ? '<div class="extras">' + row[2].map(function(s, k){ return slotHTML(row[0], s, k); }).join("") + '</div>' : '') + '</div>' + (lay.byRow[ri] || []).join("");
     });
     html += '</div></div></section>';
@@ -1180,7 +1204,7 @@ function barHTML(pid, p, c1, c2, lane, anchored, cont, more){
     '<div class="pbar-h"><span>' + (cont ? "◀ " : "") + '🔧 FINE-TUNE · ' + fmt(parse(p.start)) + ' – ' + fmt(parse(p.end)) + (more ? " ▶" : "") + '</span><span>' + (isDone ? "✓ Siap · " : "") + esc(p.a) + '</span></div>' +
     '<div class="pj">' + esc(p.j) + '</div>' +
     (p.n ? '<div class="note-callout"><div class="nc-h"><span>📝 NOTA</span><span>' + esc(p.by || "?") + ' · ' + esc(fmtAt(p.at)) + '</span></div><div class="nc-b" title="' + esc(p.n) + '">' + esc(p.n) + '</div></div>' : '') +
-    '<div class="foot-btns"><button type="button" class="note-btn" data-pdone="' + pid + '">' + (isDone ? "Batal siap" : "Tanda siap") + '</button><button type="button" class="edit-btn" data-pedit="' + pid + '">✎ Edit tempoh</button></div></div>';
+    '<div class="foot-btns"><button type="button" class="note-btn' + (isDone ? " on" : "") + '" data-pdone="' + pid + '" title="' + (isDone ? "Batal siap" : "Tanda siap") + '" aria-label="' + (isDone ? "Batal siap" : "Tanda siap") + '">' + ico("chk") + '</button><button type="button" class="edit-btn" data-pedit="' + pid + '" title="Edit tempoh" aria-label="Edit tempoh">' + ico("pen") + '</button></div></div>';
 }
 // Bars start directly under the day panel where the period begins and stretch across the following days.
 function layoutBars(wk, rows){
